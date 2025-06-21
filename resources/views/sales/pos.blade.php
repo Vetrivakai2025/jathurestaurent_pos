@@ -756,7 +756,7 @@
                                 :rules="{ required: true , regex: /^\d*\.?\d*$/}" v-slot="validationContext">
                                 <label for="Paying_Amount">{{ __('translate.Paying_Amount') }}
                                   <span class="field_required">*</span></label>
-                                <input @keyup="Verified_paidAmount(payment.montant)"
+                                <input @keyup.enter="Submit_Pos" @keyup="Verified_paidAmount(payment.montant)"
                                   :state="getValidationState(validationContext)"
                                   aria-describedby="Paying_Amount-feedback" v-model.number="payment.montant"
                                   placeholder="{{ __('translate.Paying_Amount') }}" type="text" class="form-control">
