@@ -176,24 +176,34 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
             },
             print_pos() {
                 var divContents = document.getElementById("invoice-POS").innerHTML;
-                var printWindow = window.open("", "", "height=500,width=800");
+                var printWindow = window.open("", "_blank", "height=500,width=800");
+                
                 printWindow.document.write(`
                     <!DOCTYPE html>
                     <html>
                     <head>
                         <title>Invoice</title>
                         <link rel="stylesheet" href="/assets/styles/vendor/pos_print.css">
+                        <script>
+                            // Close window after print dialog closes
+                            window.onafterprint = function() {
+                                window.close();
+                            };
+                            
+                            // Fallback if onafterprint doesn't work
+                            setTimeout(function() {
+                                window.close();
+                            }, 3000);
+                        <\/script>
                     </head>
-                    <body>${divContents}</body>
+                    <body onload="window.print()">${divContents}</body>
                     </html>
                 `);
+                
                 printWindow.document.close();
                 
-                setTimeout(() => {
-                    printWindow.print();
-                    // Optional: close after printing
-                     printWindow.close();
-                }, 1000);
+                // Focus back to POS window immediately
+                window.focus();
             },
             auto_print_pos() {
                 var divContents = document.getElementById("invoice-POS").innerHTML;
@@ -205,6 +215,18 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                     <head>
                         <title>Invoice</title>
                         <link rel="stylesheet" href="/assets/styles/vendor/pos_print.css">
+                        <script>
+                            window.onafterprint = function() {
+                                window.close();
+                            };
+                            
+                            // Fallback mechanism
+                            setTimeout(function() {
+                                if (!window.closed) {
+                                    window.close();
+                                }
+                            }, 3000);
+                        <\/script>
                         <style>
                             @media print {
                                 body { visibility: hidden; }
@@ -212,20 +234,13 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                             }
                         </style>
                     </head>
-                    <body>${divContents}</body>
+                    <body onload="window.print()">${divContents}</body>
                     </html>
                 `);
-                printWindow.document.close();
                 
-                // Wait for content to load
-                printWindow.onload = function() {
-                    setTimeout(() => {
-                        printWindow.print();
-                        // Close after printing (optional)
-                        setTimeout(() => printWindow.close(), 500);
-                    }, 500);
-                };
-            }
+                printWindow.document.close();
+                window.focus(); // Return focus to POS window
+            },
         }
     });
 </script>
