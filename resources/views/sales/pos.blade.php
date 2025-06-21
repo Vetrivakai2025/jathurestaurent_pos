@@ -45,6 +45,33 @@
     .client-option .small {
         font-size: 0.85em;
     }
+    .sticky-order-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s, box-shadow 0.2s;
+        width: 33%;
+        left: 10px;
+    }
+    .sticky-order-btn:active {
+        transform: scale(0.95); /* Click feedback */
+    }
+
+    /* Adjust for mobile */
+    @media (max-width: 768px) {
+        .sticky-order-btn {
+            bottom: 10px;
+            right: 10px;
+            padding: 10px 20px;
+        }
+    }
+    .card-list-products {
+        padding-bottom: 80px; /* Prevents button overlap */
+    }
 </style>
 
 
@@ -367,37 +394,7 @@
                         </div>
                       </div>
 
-
-
-
-
-
-
-<!-- 
-                      <div class="summery-item mb-2 row">
-                        <span class="title mr-2 col-lg-12 col-sm-12">{{ __('translate.Order_Tax') }}</span>
-
-                        <div class="col-lg-8 col-sm-12">
-                          <validation-provider name="Order Tax" :rules="{ regex: /^\d*\.?\d*$/}"
-                            v-slot="validationContext">
-
-                            <div class="input-group text-right">
-                              <input :state="getValidationState(validationContext)"
-                                aria-describedby="OrderTax-feedback" v-model.number="sale.tax_rate"
-                                @keyup="keyup_OrderTax()" type="text" class="no-focus form-control pos-tax">
-
-                              <span class="input-group-text cursor-pointer" id="basic-addon3">%</span>
-                            </div>
-                            <span class="error">@{{ validationContext.errors[0] }}</span>
-                          </validation-provider>
-                        </div>
-                      </div> -->
-
-                  
-
-       <div class="summery-item mb-2 row">
-                      
-                        
+                  <div class="summery-item mb-2 row">                                             
                         <div class="col-lg-8 col-sm-12">
                           <validation-provider name="date" rules="required" v-slot="validationContext">
                                     <div class="form-group">
@@ -419,9 +416,7 @@
 
 
 
-       <div class="summery-item mb-2 row">
-                      
-                        
+                      <div class="summery-item mb-2 row">                       
                         <div class="col-lg-8 col-sm-12">
                         <validation-provider name="Montant à payer"
                                 :rules="{ required: true , regex: /^\d*\.?\d*$/}" v-slot="validationContext">
@@ -449,44 +444,28 @@
 
 
 
-<div class="summery-item mb-3 row">
-  <div class="col-lg-8 col-sm-12">
-    <validation-provider name="Payment choice" rules="required" v-slot="{ valid, errors }">
-      <label class="form-label payment-label">
-        {{ __('translate.Payment_choice') }}
-        <span class="text-danger">*</span>
-      </label>
+                      <div class="summery-item mb-3 row">
+                        <div class="col-lg-8 col-sm-12">
+                          <validation-provider name="Payment choice" rules="required" v-slot="{ valid, errors }">
+                            <label class="form-label payment-label">
+                              {{ __('translate.Payment_choice') }}
+                              <span class="text-danger">*</span>
+                            </label>
 
-      <v-select
-        id="paymentMethodSelect"
-        v-model="payment.payment_method_id"
-        @input="Selected_Payment_Method"
-        :options="payment_methods.map(method => ({ label: method.title, value: method.id }))"
-        :reduce="option => option.value"
-        placeholder="{{ __('translate.Choose_Payment_Choice') }}"
-        :class="['custom-v-select', { 'is-invalid': errors.length }]"
-      ></v-select>
+                            <v-select
+                              id="paymentMethodSelect"
+                              v-model="payment.payment_method_id"
+                              @input="Selected_Payment_Method"
+                              :options="payment_methods.map(method => ({ label: method.title, value: method.id }))"
+                              :reduce="option => option.value"
+                              placeholder="{{ __('translate.Choose_Payment_Choice') }}"
+                              :class="['custom-v-select', { 'is-invalid': errors.length }]"
+                            ></v-select>
 
-      <span class="text-danger small d-block mt-1">@{{ errors[0] }}</span>
-    </validation-provider>
-  </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                            <span class="text-danger small d-block mt-1">@{{ errors[0] }}</span>
+                          </validation-provider>
+                        </div>
+                      </div>
                     </div>
 
                       <div class="pt-3 border-top border-gray-300 summery-total">
@@ -499,24 +478,12 @@
                           @endif
                         </h5>
                       </div>
-                    
-
-
-
-
-
-     
-
-
-
-
+                  
                       <div class="half-circle half-circle-left"></div>
                       <div class="half-circle half-circle-right"></div>
                     </div>
-
-
-                    
-                    <button @click.prevent="Submit_Pos" class="cart-btn btn btn-primary">
+                   
+                    <button @click.prevent="Submit_Pos" class=" btn btn-primary sticky-order-btn">
                       {{ __('translate.Pay_Now') }}
                     </button>
                   
@@ -1201,7 +1168,7 @@ window.addEventListener('load', () => {
                           activeElement.isContentEditable
                       );
                   },
-                  
+
                 submitOnEnter() {
                       // Option 1: Directly call the submit method
                       this.Submit_Pos();
