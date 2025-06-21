@@ -1207,16 +1207,63 @@ window.addEventListener('load', () => {
             },
 
               openCustomerScreen() {
-        if (!this.customerWindow || this.customerWindow.closed) {
-            this.customerWindow = window.open('/customer-display', 'CustomerDisplay', 'width=600,height=800');
-            // Wait for the window to load before sending initial data
-            setTimeout(() => {
-                this.updateCustomerScreen();
-            }, 500);
-        } else {
-            this.customerWindow.focus();
-        }
-    },
+                // Check if window already exists
+                if (!this.customerWindow || this.customerWindow.closed) {
+                    // Try to position on secondary screen
+                    const dualScreenLeft = window.screenLeft !== undefined 
+                        ? window.screenLeft 
+                        : window.screenX;
+                    const dualScreenTop = window.screenTop !== undefined 
+                        ? window.screenTop 
+                        : window.screenY;
+                    
+                    const width = 600;
+                    const height = 800;
+                    
+                    // Calculate position for secondary display (assuming horizontal extension)
+                    const left = dualScreenLeft + window.outerWidth;
+                    const top = dualScreenTop;
+                    
+                    // Try to open on secondary display
+                    this.customerWindow = window.open(
+                        '/customer-display',
+                        'CustomerDisplay',
+                        `width=${width},height=${height},left=${left},top=${top},scrollbars=no`
+                    );
+                    
+                    // Fallback if positioning fails
+                    setTimeout(() => {
+                        if (this.customerWindow) {
+                            // Check if window actually opened on secondary screen
+                            if (this.customerWindow.screenX === window.screenX && 
+                                this.customerWindow.screenY === window.screenY) {
+                                // Failed to open on second screen - go fullscreen
+                                this.customerWindow.resizeTo(
+                                    screen.availWidth,
+                                    screen.availHeight
+                                );
+                                this.customerWindow.moveTo(0, 0);
+                            }
+                            
+                            // Send initial data
+                            this.updateCustomerScreen();
+                        }
+                    }, 500);
+                } else {
+                    // Window already exists - just focus it
+                    this.customerWindow.focus();
+                }
+                
+                // Optional: Add event listener to detect display changes
+                window.addEventListener('resize', this.handleScreenChange);
+            },
+            handleScreenChange() {
+                if (this.customerWindow && !this.customerWindow.closed) {
+                    // Re-center window if displays change
+                    const left = window.screenX + window.outerWidth;
+                    this.customerWindow.moveTo(left, window.screenY);
+                }
+            },
     
      updateCustomerScreen() {
         if (this.customerWindow && !this.customerWindow.closed) {

@@ -192,7 +192,7 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                 setTimeout(() => {
                     printWindow.print();
                     // Optional: close after printing
-                    // printWindow.close();
+                     printWindow.close();
                 }, 1000);
             },
             auto_print_pos() {
