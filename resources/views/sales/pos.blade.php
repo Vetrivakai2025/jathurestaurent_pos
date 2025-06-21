@@ -1163,10 +1163,14 @@ window.addEventListener('load', () => {
         },
 
         mounted() {
+          window.addEventListener('keydown', this.handleGlobalEnterKey);
           this.fetchCategories();
           this.fetchBrands();
         },
-
+        beforeDestroy() {
+            // Clean up the event listener when component is destroyed
+            window.removeEventListener('keydown', this.handleGlobalEnterKey);
+        },
         watch: {
           details: {
             handler() {
@@ -1181,6 +1185,23 @@ window.addEventListener('load', () => {
 
 
         methods: {
+                // Handle Enter key press globally
+                  handleGlobalEnterKey(event) {
+                      if (event.key === 'Enter' && !this.isInputFocused()) {
+                          event.preventDefault(); // Prevent form submission if inside a form
+                          this.Submit_Pos();
+                      }
+                  },
+                  // Check if an input/textarea is focused
+                  isInputFocused() {
+                      const activeElement = document.activeElement;
+                      return (
+                          activeElement.tagName === 'INPUT' ||
+                          activeElement.tagName === 'TEXTAREA' ||
+                          activeElement.isContentEditable
+                      );
+                  },
+                  
                 submitOnEnter() {
                       // Option 1: Directly call the submit method
                       this.Submit_Pos();
