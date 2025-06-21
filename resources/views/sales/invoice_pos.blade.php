@@ -47,8 +47,8 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
               <br></span>
             <span v-show="pos_settings.show_customer">{{ __('translate.Customer') }} : @{{sale.client_name}}
               <br></span>
-              <span v-show="pos_settings.show_Warehouse">{{ __('translate.warehouse') }} : @{{sale.warehouse_name}}
-              <br></span>
+              <!-- <span v-show="pos_settings.show_Warehouse">{{ __('translate.warehouse') }} : @{{sale.warehouse_name}}
+              <br></span> -->
           </p>
         </div>
 
@@ -69,12 +69,12 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
               </td>
             </tr>
 
-            <tr class="mt-10" v-show="pos_settings.show_discount">
+            <!-- <tr class="mt-10" v-show="pos_settings.show_discount">
               <td colspan="3" class="total">{{ __('translate.Tax') }}</td>
               <td class="total text-right">
                 @{{sale.taxe}} (@{{formatNumber(sale.tax_rate,2)}} %)
               </td>
-            </tr>
+            </tr> -->
 
             {{-- Discount --}}
             <tr class="mt-10" v-show="pos_settings.show_discount">
@@ -85,11 +85,11 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
           
             </tr>
 
-            <tr class="mt-10" v-show="pos_settings.show_discount">
+            <!-- <tr class="mt-10" v-show="pos_settings.show_discount">
               <td colspan="3" class="total">{{ __('translate.Shipping') }}</td>
               <td class="total text-right">
                 @{{sale.shipping}}</td>
-            </tr>
+            </tr> -->
 
             <tr class="mt-10">
               <td colspan="3" class="total">{{ __('translate.Total') }}</td>
@@ -97,10 +97,9 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                 @{{sale.GrandTotal}}</td>
             </tr>
 
-            <tr v-show="isPaid">
-              <td colspan="3" class="total">{{ __('translate.Paid') }}</td>
-              <td class="total text-right">
-                 @{{sale.paid_amount}}</td>
+             <tr v-show="isPaid" style="font-size:9px;">
+              <td colspan="2">{{ __('translate.Paid') }}</td>
+              <td colspan="2" class="text-right">@{{sale.paid_amount}}</td>
             </tr>
 
             <tr v-show="isPaidLessThanTotal">
@@ -177,24 +176,34 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
             },
             print_pos() {
                 var divContents = document.getElementById("invoice-POS").innerHTML;
-                var printWindow = window.open("", "", "height=500,width=800");
+                var printWindow = window.open("", "_blank", "height=500,width=800");
+                
                 printWindow.document.write(`
                     <!DOCTYPE html>
                     <html>
                     <head>
                         <title>Invoice</title>
                         <link rel="stylesheet" href="/assets/styles/vendor/pos_print.css">
+                        <script>
+                            // Close window after print dialog closes
+                            window.onafterprint = function() {
+                                window.close();
+                            };
+                            
+                            // Fallback if onafterprint doesn't work
+                            setTimeout(function() {
+                                window.close();
+                            }, 3000);
+                        <\/script>
                     </head>
-                    <body>${divContents}</body>
+                    <body onload="window.print()">${divContents}</body>
                     </html>
                 `);
+                
                 printWindow.document.close();
                 
-                setTimeout(() => {
-                    printWindow.print();
-                    // Optional: close after printing
-                    // printWindow.close();
-                }, 1000);
+                // Focus back to POS window immediately
+                window.focus();
             },
             auto_print_pos() {
                 var divContents = document.getElementById("invoice-POS").innerHTML;
@@ -206,6 +215,18 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                     <head>
                         <title>Invoice</title>
                         <link rel="stylesheet" href="/assets/styles/vendor/pos_print.css">
+                        <script>
+                            window.onafterprint = function() {
+                                window.close();
+                            };
+                            
+                            // Fallback mechanism
+                            setTimeout(function() {
+                                if (!window.closed) {
+                                    window.close();
+                                }
+                            }, 3000);
+                        <\/script>
                         <style>
                             @media print {
                                 body { visibility: hidden; }
@@ -213,20 +234,13 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                             }
                         </style>
                     </head>
-                    <body>${divContents}</body>
+                    <body onload="window.print()">${divContents}</body>
                     </html>
                 `);
-                printWindow.document.close();
                 
-                // Wait for content to load
-                printWindow.onload = function() {
-                    setTimeout(() => {
-                        printWindow.print();
-                        // Close after printing (optional)
-                        setTimeout(() => printWindow.close(), 500);
-                    }, 500);
-                };
-            }
+                printWindow.document.close();
+                window.focus(); // Return focus to POS window
+            },
         }
     });
 </script>
