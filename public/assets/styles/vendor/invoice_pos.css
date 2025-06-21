@@ -348,3 +348,74 @@ table {
 .quantity span {
   padding: 8px;
 }
+
+
+/* updat for cafe pos thermal printer size */
+
+/* Thermal Printer Friendly Styles */
+#invoice-POS {
+  max-width: 80mm !important; /* Thermal printer width */
+  width: 80mm !important;
+  margin: 0 auto;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+/* Hide unwanted sections */
+[v-show="pos_settings.show_Warehouse"],
+[v-show="pos_settings.show_discount"] {
+  display: none !important;
+}
+
+/* Compact table styles */
+.detail_invoice tr {
+  border-bottom: 1px dashed #000 !important; /* Lighter border */
+  padding: 2px 0 !important;
+}
+
+.detail_invoice td {
+  padding: 3px 0 !important;
+}
+
+/* Reduce font sizes */
+body, td, th {
+  font-size: 10px !important;
+}
+
+.info h2 {
+  font-size: 14px !important;
+  margin-bottom: 5px !important;
+}
+
+/* Remove unnecessary margins */
+.mt-10, .mt-3 {
+  margin-top: 3px !important;
+}
+
+/* Compact product lines */
+.product_detail_invoice {
+  padding-left: 5px !important;
+}
+
+/* Hide legal copy if needed */
+#legalcopy {
+  display: none;
+}
+
+@media print {
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  #invoice-POS {
+    width: 80mm !important;
+    max-width: 80mm !important;
+  }
+  
+  /* Force thermal printer to use full width */
+  table {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

@@ -47,8 +47,8 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
               <br></span>
             <span v-show="pos_settings.show_customer">{{ __('translate.Customer') }} : @{{sale.client_name}}
               <br></span>
-              <span v-show="pos_settings.show_Warehouse">{{ __('translate.warehouse') }} : @{{sale.warehouse_name}}
-              <br></span>
+              <!-- <span v-show="pos_settings.show_Warehouse">{{ __('translate.warehouse') }} : @{{sale.warehouse_name}}
+              <br></span> -->
           </p>
         </div>
 
@@ -69,12 +69,12 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
               </td>
             </tr>
 
-            <tr class="mt-10" v-show="pos_settings.show_discount">
+            <!-- <tr class="mt-10" v-show="pos_settings.show_discount">
               <td colspan="3" class="total">{{ __('translate.Tax') }}</td>
               <td class="total text-right">
                 @{{sale.taxe}} (@{{formatNumber(sale.tax_rate,2)}} %)
               </td>
-            </tr>
+            </tr> -->
 
             {{-- Discount --}}
             <tr class="mt-10" v-show="pos_settings.show_discount">
@@ -85,11 +85,11 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
           
             </tr>
 
-            <tr class="mt-10" v-show="pos_settings.show_discount">
+            <!-- <tr class="mt-10" v-show="pos_settings.show_discount">
               <td colspan="3" class="total">{{ __('translate.Shipping') }}</td>
               <td class="total text-right">
                 @{{sale.shipping}}</td>
-            </tr>
+            </tr> -->
 
             <tr class="mt-10">
               <td colspan="3" class="total">{{ __('translate.Total') }}</td>
@@ -97,10 +97,9 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                 @{{sale.GrandTotal}}</td>
             </tr>
 
-            <tr v-show="isPaid">
-              <td colspan="3" class="total">{{ __('translate.Paid') }}</td>
-              <td class="total text-right">
-                 @{{sale.paid_amount}}</td>
+             <tr v-show="isPaid" style="font-size:9px;">
+              <td colspan="2">{{ __('translate.Paid') }}</td>
+              <td colspan="2" class="text-right">@{{sale.paid_amount}}</td>
             </tr>
 
             <tr v-show="isPaidLessThanTotal">
