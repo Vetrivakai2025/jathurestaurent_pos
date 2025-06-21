@@ -13,7 +13,7 @@
                     <div class="form-group">
                         <label>Message (will be sent to all clients)</label>
                         <textarea v-model="form.message" class="form-control" rows="3" placeholder="Enter message to send to all clients"></textarea>
-                        <small>@{{ form.message.length }}/160 characters</small>
+                        <small>@{{ form.message.length }}/1000 characters</small>
                     </div>
 
                     <button type="submit" class="btn btn-primary" :disabled="loading">
