@@ -8,8 +8,11 @@
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         .container {
             max-width: 900px;
@@ -18,6 +21,11 @@
             padding: 25px 30px;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
         }
         .header {
             text-align: center;
@@ -44,6 +52,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 12px;
+            margin-bottom: 180px; /* Space for sticky total */
         }
         .cart-table thead tr th {
             text-align: left;
@@ -105,11 +114,24 @@
             color: #222;
             font-size: 16px;
         }
-        .total-section {
-            margin-top: 30px;
-            padding-top: 20px;
+        
+        /* Sticky total section styles */
+        .total-section-container {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 20px 0;
             border-top: 3px solid #ddd;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            margin-top: auto; /* Push to bottom */
         }
+        
+        .total-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+        
         .total-row {
             font-size: 18px;
             font-weight: 600;
@@ -141,6 +163,13 @@
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
+        
+        /* Scrollable area for cart items */
+        .cart-items-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -153,23 +182,27 @@
             </div>
         </div>
         
-        <div id="cart-content">
-            <table class="cart-table" id="cart-items">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Item</th>
-                        <th>Takeaway Cost</th>
-                        <th class="text-right">Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="4" class="empty-cart">No items in cart</td>
-                    </tr>
-                </tbody>
-            </table>
-            
+        <div class="cart-items-container">
+            <div id="cart-content">
+                <table class="cart-table" id="cart-items">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Item</th>
+                            <th>Takeaway Cost</th>
+                            <th class="text-right">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" class="empty-cart">No items in cart</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="total-section-container">
             <div id="cart-total" class="total-section" style="display: none;">
                 <div class="total-row">
                     <span>Subtotal</span>

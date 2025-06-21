@@ -427,10 +427,13 @@
                                 :rules="{ required: true , regex: /^\d*\.?\d*$/}" v-slot="validationContext">
                                 <label for="Paying_Amount">{{ __('translate.Paying_Amount') }}
                                   <span class="field_required">*</span></label>
-                                <input @keyup="Verified_paidAmount(payment.montant)"
+                                <input @keyup.enter="Submit_Pos" @keyup="Verified_paidAmount()"
                                   :state="getValidationState(validationContext)"
-                                  aria-describedby="Paying_Amount-feedback" v-model.number="payment.montant"
-                                  placeholder="{{ __('translate.Paying_Amount') }}" type="text" class="form-control">
+                                  aria-describedby="Paying_Amount-feedback" 
+                                  v-model.number="payment.montant"
+                                  placeholder="{{ __('translate.Paying_Amount') }}" 
+                                  type="text" 
+                                  class="form-control">
                                 <div class="error">
                                   @{{ validationContext.errors[0] }}</div>
 
@@ -1178,6 +1181,13 @@ window.addEventListener('load', () => {
 
 
         methods: {
+                submitOnEnter() {
+                      // Option 1: Directly call the submit method
+                      this.Submit_Pos();
+                      
+                      // Option 2: Programmatically click the button
+                      // this.$refs.orderButton.click();
+                  },
                 searchCustomers(search) {
                     this.searchQuery = search.toLowerCase();
                     if (!this.searchQuery || this.searchQuery.length < 2) {
@@ -1377,6 +1387,7 @@ window.addEventListener('load', () => {
  
 
  Submit_Pos() {
+  this.payment.montant = this.GrandTotal;
     // Start the progress bar.
     NProgress.start();
     NProgress.set(0.1);
@@ -1516,7 +1527,7 @@ CreatePOS() {
         //           toastr.error('Veuillez remplir correctement le formulaire');
         //           }
         //           else if (this.payment.montant > this.GrandTotal) {
-        //               toastr.error('Le montant à payer est supérieur au total à payer');
+        //               toastr.error('The amount to be paid is greater than the total to be paid');
         //               this.payment.montant = 0;
         //           }else{
         //               this.CreatePOS();
@@ -1528,12 +1539,12 @@ CreatePOS() {
           //---------- keyup paid montant
           Verified_paidAmount() {
               if (isNaN(this.payment.montant)) {
-                  this.payment.montant = 0;
-                  
+                  this.payment.montant = this.GrandTotal.toFixed(2); // Set to GrandTotal instead of 0
               } else if (this.payment.montant > this.GrandTotal) {
-                  toastr.warning('Le montant à payer est supérieur au total à payer');
-                  this.payment.montant = 0;
-              } 
+                  toastr.warning('The amount to be paid is greater than the total to be paid');
+                  this.payment.montant = this.GrandTotal.toFixed(2); // Reset to GrandTotal
+              }
+              // No else case needed - let user's input stand if valid
           },
 
           //---Submit Validation Update Detail
@@ -1927,45 +1938,41 @@ CreatePOS() {
 
           //----------- Calcul Total
           CaclulTotal() {
-            this.total = 0;
-            for (var i = 0; i < this.details.length; i++) {
-              var tax = this.details[i].taxe * this.details[i].quantity;
-              this.details[i].subtotal = parseFloat(
-                this.details[i].quantity * this.details[i].Net_price + tax
-              );
-              this.total = parseFloat(this.total + this.details[i].subtotal);
-            }
+              this.total = 0;
+              for (var i = 0; i < this.details.length; i++) {
+                  var tax = this.details[i].taxe * this.details[i].quantity;
+                  this.details[i].subtotal = parseFloat(
+                      this.details[i].quantity * this.details[i].Net_price + tax
+                  );
+                  this.total = parseFloat(this.total + this.details[i].subtotal);
+              }
 
-            if (this.sale.discount_type == 'percent') {
-                this.sale.discount_percent_total = parseFloat((this.total * this.sale.discount) / 100);
-                const total_without_discount = parseFloat(this.total -  this.sale.discount_percent_total);
+              if (this.sale.discount_type == 'percent') {
+                  this.sale.discount_percent_total = parseFloat((this.total * this.sale.discount) / 100);
+                  const total_without_discount = parseFloat(this.total - this.sale.discount_percent_total);
 
-                this.sale.TaxNet = parseFloat((total_without_discount * this.sale.tax_rate) / 100);
-                this.GrandTotal = parseFloat(total_without_discount + this.sale.TaxNet + this.sale.shipping);
+                  this.sale.TaxNet = parseFloat((total_without_discount * this.sale.tax_rate) / 100);
+                  this.GrandTotal = parseFloat(total_without_discount + this.sale.TaxNet + this.sale.shipping);
+              } else {
+                  this.sale.discount_percent_total = 0;
+                  const total_without_discount = parseFloat(this.total - this.sale.discount);
 
-                var grand_total =  this.GrandTotal.toFixed(2);
-                this.GrandTotal = parseFloat(grand_total);
+                  this.sale.TaxNet = parseFloat((total_without_discount * this.sale.tax_rate) / 100);
+                  this.GrandTotal = parseFloat(total_without_discount + this.sale.TaxNet + this.sale.shipping);
+              }
 
-            } else {
-                this.sale.discount_percent_total = 0;
-                const total_without_discount = parseFloat(this.total - this.sale.discount);
-
-                this.sale.TaxNet = parseFloat((total_without_discount * this.sale.tax_rate) / 100);
-                this.GrandTotal  = parseFloat(total_without_discount + this.sale.TaxNet + this.sale.shipping);
-                var grand_total  =  this.GrandTotal.toFixed(2);
-                this.GrandTotal  = parseFloat(grand_total);
-            }
-
-             if (this.customerWindow && !this.customerWindow.closed) {
-        this.customerWindow.postMessage({
-            type: 'update_total',
-            total: this.GrandTotal,
-            discount: this.sale.discount_type == 'percent' ? this.sale.discount_percent_total : this.sale.discount,
-            tax: this.sale.TaxNet,
-            shipping: this.sale.shipping
-        }, '*');
-    }
-      
+              // Automatically update payment.montant with GrandTotal
+              this.payment.montant = this.GrandTotal.toFixed(2);
+              
+              if (this.customerWindow && !this.customerWindow.closed) {
+                  this.customerWindow.postMessage({
+                      type: 'update_total',
+                      total: this.GrandTotal,
+                      discount: this.sale.discount_type == 'percent' ? this.sale.discount_percent_total : this.sale.discount,
+                      tax: this.sale.TaxNet,
+                      shipping: this.sale.shipping
+                  }, '*');
+              }
           },
 
 
