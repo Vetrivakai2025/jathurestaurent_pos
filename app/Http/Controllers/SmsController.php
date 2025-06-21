@@ -10,7 +10,7 @@ class SmsController extends Controller
 {
     public function index()
     {
-        return view('sms.sms');
+        return view('Sms.sms');
     }
 
     public function getClients()
