@@ -1868,7 +1868,7 @@ return [
     'Account' => 'Account',
     'Choose_Account' => 'Choose Account',
     'Add_new' => 'Add new',
-    'Good_Morning' => 'Good Morning Athi',
+    'Good_Morning' => 'Good Morning',
     'what_happening_with_your_store' => 'Here’s what happening with your store today!',
     'Today_total_Purchases' => 'Today’s total Purchases',
     'Today_total_Sales' => 'Today’s total Sales',

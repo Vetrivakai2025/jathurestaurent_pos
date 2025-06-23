@@ -57,7 +57,7 @@
             @include('components.icons.expand', ['class'=>'width_20'])
         </button>
 
-        <div class="button_language dropdown p-2 ms-2">
+        <!-- <div class="button_language dropdown p-2 ms-2">
             
             <i class="i-Globe"
                 type="button"
@@ -78,7 +78,7 @@
                 <li><a class="dropdown-item" href="{{route('language.switch','ba')}}"><img class="flag-icon" src="{{asset('assets/flags/bd.svg')}}">  Bangla</a></li>
 
             </ul>
-        </div>
+        </div> -->
         
         <div class="dropdown button_settings">
             <img 
