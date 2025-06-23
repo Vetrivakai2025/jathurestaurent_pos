@@ -30,7 +30,7 @@ class SmsController extends Controller
   public function send(Request $request)
 {
     $validated = $request->validate([
-        'message' => 'required|string|max:160',
+        'message' => 'required|string|max:1000',
         'phone' => 'required_without:client_id|nullable|digits:10',
         'client_id' => 'required_without:phone|nullable'
     ]);
@@ -67,7 +67,7 @@ class SmsController extends Controller
             'Authorization' => 'Bearer ' . env('TEXTLK_API_KEY'),
             'Accept' => 'application/json',
         ])->post('https://app.text.lk/api/v3/sms/send', [
-            'sender_id' => env('TEXTLK_SENDER_ID', 'TextIT'),
+            'sender_id' => env('TEXTLK_SENDER_ID', 'TharmyPV'),
             'message' => $validated['message'],
             'recipient' => $to,
         ]);
