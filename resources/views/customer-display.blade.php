@@ -15,7 +15,7 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 900px;
+           
             margin: 0 auto;
             background: white;
             padding: 25px 30px;
@@ -127,7 +127,7 @@
         }
         
         .total-section {
-            max-width: 900px;
+      
             margin: 0 auto;
             padding: 0 30px;
         }
@@ -225,14 +225,55 @@
                     <span id="total-amount">0.00</span>
                 </div>
             </div>
+            <!-- Payment Summary Section -->
+            <div id="payment-summary" class="total-section" style="margin-top: 20px;">
+                <div class="total-row">
+                    <span>Amount Given</span>
+                    <span id="customer-given">Rs 0.00</span>
+                </div>
+                <div class="total-row" id="balance-row">
+                    <span>Balance Return</span>
+                    <span id="balance-return">Rs 0.00</span>
+                </div>
+                <div class="total-row text-danger" id="due-row" style="display: none;">
+                    <span>Amount Due</span>
+                    <span id="amount-due">Rs 0.00</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
+        function updateCustomerPaymentSummary(data) {
+            const symbol = data.currency || 'Rs';
+            const symbolBefore = data.symbol_placement === 'before';
+
+            const given = parseFloat(data.customerGivenAmount || 0);
+            const total = parseFloat(data.grandTotal || 0);
+            const balance = parseFloat(data.balanceToReturn || 0);
+
+            document.getElementById('customer-given').innerHTML = formatCurrency(given, symbol, symbolBefore);
+
+            if (balance >= 0) {
+                document.getElementById('balance-return').innerHTML = formatCurrency(balance, symbol, symbolBefore);
+                document.getElementById('balance-row').style.display = 'flex';
+                document.getElementById('due-row').style.display = 'none';
+            } else {
+                document.getElementById('amount-due').innerHTML = formatCurrency(Math.abs(balance), symbol, symbolBefore);
+                document.getElementById('balance-row').style.display = 'none';
+                document.getElementById('due-row').style.display = 'flex';
+            }
+        }
+
 // Listen for localStorage changes
 window.addEventListener('storage', function(event) {
     if (event.key === 'customer_display_reload') {
         window.location.reload();
+    }
+     if (event.key === 'customer_display_sync') {
+        const paymentData = JSON.parse(event.newValue || '{}');
+        updateCustomerPaymentSummary(paymentData);
     }
 });
 
@@ -339,6 +380,12 @@ window.addEventListener('storage', function(event) {
             cartItems.innerHTML = '<tr><td colspan="4" class="empty-cart">No items in cart</td></tr>';
             cartTotal.style.display = 'none';
         }
+        const initData = localStorage.getItem('customer_display_sync');
+        
+        if (initData) {
+            updateCustomerPaymentSummary(JSON.parse(initData));
+        }
+
     </script>
 </body>
 </html>

@@ -60,7 +60,21 @@
     .sticky-order-btn:active {
         transform: scale(0.95); /* Click feedback */
     }
+    .balance-return {
+      padding: 8px;
+      background-color: #d4edda;
+      border-radius: 4px;
+      font-weight: bold;
+      color: #155724;
+    }
 
+    .amount-due {
+      padding: 8px;
+      background-color: #f8d7da;
+      border-radius: 4px;
+      font-weight: bold;
+      color: #721c24;
+    }
     /* Adjust for mobile */
     @media (max-width: 768px) {
         .sticky-order-btn {
@@ -415,7 +429,26 @@
                       </div>
 
 
-
+                      <div class="summery-item mb-2 row">
+                        <div class="col-lg-8 col-sm-12">
+                          <validation-provider name="Amount Given" 
+                            :rules="{ required: true, regex: /^\d*\.?\d*$/ }" 
+                            v-slot="validationContext">
+                            <label for="customerGivenAmount">Amount Given
+                              <span class="field_required">*</span>
+                            </label>
+                            <input 
+                              @keyup="calculateBalance"
+                              v-model.number="customerGivenAmount"
+                              :state="getValidationState(validationContext)"
+                              type="number" 
+                              class="form-control"
+                              step="0.01"
+                              min="0">
+                            <span class="error">@{{ validationContext.errors[0] }}</span>
+                          </validation-provider>
+                        </div>
+                      </div>
                       <div class="summery-item mb-2 row">                       
                         <div class="col-lg-8 col-sm-12">
                         <validation-provider name="Montant à payer"
@@ -442,6 +475,31 @@
                         </div>
                       </div>
 
+                      <div class="summery-item mb-2 row" v-if="balanceToReturn >= 0">
+                        <div class="col-lg-8 col-sm-12">
+                          <label>Balance Return</label>
+                          <div class="balance-return">
+                            @if($symbol_placement == 'before')
+                              <span>{{ $currency }} @{{ formatNumber(balanceToReturn, 2) }}</span>
+                            @else
+                              <span>@{{ formatNumber(balanceToReturn, 2) }} {{ $currency }}</span>
+                            @endif
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="summery-item mb-2 row" v-else>
+                        <div class="col-lg-8 col-sm-12">
+                          <label class="text-danger"> Amount Due</label>
+                          <div class="amount-due">
+                            @if($symbol_placement == 'before')
+                              <span>{{ $currency }} @{{ formatNumber(Math.abs(balanceToReturn), 2) }}</span>
+                            @else
+                              <span>@{{ formatNumber(Math.abs(balanceToReturn), 2) }} {{ $currency }}</span>
+                            @endif
+                          </div>
+                        </div>
+                      </div>
 
 
                       <div class="summery-item mb-3 row">
@@ -994,6 +1052,9 @@
 
 window.addEventListener('load', () => {
     localStorage.setItem('customer_display_reload', Date.now()); // Unique value to trigger change
+    if (localStorage.getItem('customer_display_sync')) {
+        localStorage.removeItem('customer_display_sync');
+    }
 });
 
 
@@ -1008,6 +1069,8 @@ window.addEventListener('load', () => {
       var app = new Vue({
         el: '#main-pos',
         data: {
+            customerGivenAmount: 0,
+            balanceToReturn: 0,
             searchQuery: '',
             filteredClients: [],
             invoiceHtml: '',
@@ -1152,6 +1215,27 @@ window.addEventListener('load', () => {
 
 
         methods: {
+                calculateBalance() {
+                    const givenAmount = parseFloat(this.customerGivenAmount) || 0;
+                    const grandTotal = parseFloat(this.GrandTotal) || 0;
+                    
+                    this.balanceToReturn = givenAmount - grandTotal;
+                    
+                    // Auto-fill payment amount if customer gives enough
+                    if (givenAmount >= grandTotal) {
+                      this.payment.montant = grandTotal.toFixed(2);
+                    } else {
+                      this.payment.montant = givenAmount.toFixed(2);
+                    }
+                    localStorage.setItem('customer_display_sync', JSON.stringify({
+                      grandTotal: this.GrandTotal,
+                      customerGivenAmount: this.customerGivenAmount,
+                      balanceToReturn: this.balanceToReturn,
+                      currency: '{{ $currency }}',
+                      symbol_placement: '{{ $symbol_placement }}',
+                    }));
+
+                  },
                 // Handle Enter key press globally
                   handleGlobalEnterKey(event) {
                       if (event.key === 'Enter' && !this.isInputFocused()) {
@@ -1573,6 +1657,18 @@ CreatePOS() {
 
           //---------- keyup paid montant
           Verified_paidAmount() {
+                const amount = parseFloat(this.payment.montant) || 0;
+                const grandTotal = parseFloat(this.GrandTotal) || 0;
+                
+                if (amount > grandTotal) {
+                  toastr.warning('Payment amount cannot exceed total due');
+                  this.payment.montant = grandTotal.toFixed(2);
+                  this.customerGivenAmount = grandTotal.toFixed(2);
+                  this.balanceToReturn = 0;
+                } else {
+                  this.balanceToReturn = (this.customerGivenAmount - amount).toFixed(2);
+                }
+            
               if (isNaN(this.payment.montant)) {
                   this.payment.montant = this.GrandTotal.toFixed(2); // Set to GrandTotal instead of 0
               } else if (this.payment.montant > this.GrandTotal) {
@@ -2008,6 +2104,7 @@ CreatePOS() {
                       shipping: this.sale.shipping
                   }, '*');
               }
+              this.calculateBalance()
           },
 
 
