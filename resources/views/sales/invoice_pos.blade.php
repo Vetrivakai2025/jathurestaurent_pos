@@ -2,7 +2,6 @@
 
 if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
     $languageDirection = 'rtl' ;
-
 } else {
     $languageDirection = 'ltr' ;
 }
@@ -22,18 +21,32 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
   <link rel="stylesheet" href="{{asset('assets/styles/vendor/invoice_pos.css')}}">
 
   <script src="{{asset('/assets/js/vue.js')}}"></script>
+  <style>
+    /* Add this new style for the tear line */
+ .cut-line {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 18px;
+  color: #333;
+  font-family: monospace;
+  
+  padding-top: 45px;
+  padding-bottom:10px;
+}
 
+  </style>
 </head>
 
 <body>
 
   <div id="in_pos">
     <div class="hidden-print">
-    <a @click="print_pos()" class="btn btn-primary"> {{ __('translate.print') }}</a>
+      <a @click="print_pos()" class="btn btn-primary"> {{ __('translate.print') }}</a>
       <br>
     </div>
     <div id="invoice-POS">
-      <div>
+      <!-- Customer Copy (Top Part) -->
+      <div class="customer-copy">
         <div class="info">
           <h2 class="text-center">@{{setting.CompanyName}}</h2>
 
@@ -47,8 +60,6 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
               <br></span>
             <span v-show="pos_settings.show_customer">{{ __('translate.Customer') }} : @{{sale.client_name}}
               <br></span>
-              <!-- <span v-show="pos_settings.show_Warehouse">{{ __('translate.warehouse') }} : @{{sale.warehouse_name}}
-              <br></span> -->
           </p>
         </div>
 
@@ -69,35 +80,20 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
               </td>
             </tr>
 
-            <!-- <tr class="mt-10" v-show="pos_settings.show_discount">
-              <td colspan="3" class="total">{{ __('translate.Tax') }}</td>
-              <td class="total text-right">
-                @{{sale.taxe}} (@{{formatNumber(sale.tax_rate,2)}} %)
-              </td>
-            </tr> -->
-
-            {{-- Discount --}}
             <tr class="mt-10" v-show="pos_settings.show_discount">
               <td colspan="3" class="total">{{ __('translate.Discount') }}</td>
               <td class="total text-right">
                 <span>@{{sale.discount}}</span>
               </td>
-          
             </tr>
-
-            <!-- <tr class="mt-10" v-show="pos_settings.show_discount">
-              <td colspan="3" class="total">{{ __('translate.Shipping') }}</td>
-              <td class="total text-right">
-                @{{sale.shipping}}</td>
-            </tr> -->
 
             <tr class="mt-10">
               <td colspan="3" class="total">{{ __('translate.Total') }}</td>
-              <td  class="total text-right">
+              <td class="total text-right">
                 @{{sale.GrandTotal}}</td>
             </tr>
 
-             <tr v-show="isPaid" style="font-size:9px;">
+            <tr v-show="isPaid" style="font-size:9px;">
               <td colspan="2">{{ __('translate.Paid') }}</td>
               <td colspan="2" class="text-right">@{{sale.paid_amount}}</td>
             </tr>
@@ -129,20 +125,53 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
           </tbody>
         </table>
 
-        <div id="legalcopy" class="ms-2"  v-show="pos_settings.show_note">
+        <div id="legalcopy" class="ms-2" v-show="pos_settings.show_note">
           <p class="legal">
             <strong>{{ __('translate.Thank_You_For_Shopping_With_Us_Please_Come_Again') }}</strong>
           </p>
         </div>
+      </div>
+<div class="cut-line">
+------------------------------
+</div>
 
+      <!-- Kitchen Copy (Bottom Part) -->
+      <div class="kitchen-copy">
+        <div class="kitchen-header">
+          <h3 class="text-center">KITCHEN COPY</h3>
+          <p>
+            <span>Order #: @{{sale.Ref}} <br></span>
+            <span>Date: @{{sale.date}} <br></span>
+            <span v-show="pos_settings.show_customer">Customer: @{{sale.client_name}} <br></span>
+          </p>
+        </div>
+        
+        <table class="kitchen-items">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="detail_invoice in details">
+              <td>@{{detail_invoice.name}}</td>
+              <td>@{{formatNumber(detail_invoice.quantity,2)}}</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="kitchen-footer">
+          <p>Order Time: @{{new Date().toLocaleTimeString()}}</p>
+        </div>
       </div>
     </div>
   </div>
 
   <script src="{{asset('/assets/js/jquery.min.js')}}"></script>
 
-
- <script>
+  <script>
+    
     var app = new Vue({
         el: '#in_pos',
         data: {
@@ -153,18 +182,19 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
             setting: @json($setting),
         },
         mounted() {
-            // Check both printable flag and autoprint URL parameter
             if (this.pos_settings.is_printable || window.location.search.includes('autoprint=true')) {
                 this.auto_print_pos();
             }
         },
-        methods: {
+        computed: {
             isPaid() {
                 return parseFloat(this.sale.paid_amount) > 0;
             },
             isPaidLessThanTotal() {
                 return parseFloat(this.sale.paid_amount) < parseFloat(this.sale.GrandTotal);
-            },
+            }
+        },
+        methods: {
             formatNumber(number, dec) {
                 const value = (typeof number === "string" ? number : number.toString()).split(".");
                 if (dec <= 0) return value[0];
@@ -184,13 +214,63 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                     <head>
                         <title>Invoice</title>
                         <link rel="stylesheet" href="/assets/styles/vendor/pos_print.css">
+                        <style>
+                            /* Kitchen copy styles */
+                            .kitchen-copy {
+                                margin-top: 50px;
+                                padding-top: 20px;
+                                border-top: 2px dashed #000;
+                                page-break-before: always;
+                            }
+                            .kitchen-items {
+                                width: 100%;
+                                margin-top: 10px;
+                            }
+                            .kitchen-items th {
+                                text-align: left;
+                                border-bottom: 1px solid #000;
+                            }
+                            .kitchen-items td {
+                                padding: 3px 0;
+                            }
+                                  .cut-line {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 12px;
+  color: #333;
+  font-family: monospace;
+  border-top: 1px dashed #000;
+  padding-top: 25px;
+}
+
+                            .kitchen-header {
+                                text-align: center;
+                                margin-bottom: 10px;
+                            }
+                            .kitchen-footer {
+                                margin-top: 10px;
+                                text-align: center;
+                                font-size: 12px;
+                            }
+                            @media print {
+                                body { 
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                #invoice-POS { 
+                                    width: 80mm;
+                                    margin: 0 auto;
+                                }
+                                .kitchen-copy {
+                                    margin-top: 30mm; /* Space between customer copy and kitchen copy */
+                                }
+                            }
+                        </style>
                         <script>
-                            // Close window after print dialog closes
                             window.onafterprint = function() {
                                 window.close();
                             };
                             
-                            // Fallback if onafterprint doesn't work
                             setTimeout(function() {
                                 window.close();
                             }, 3000);
@@ -201,8 +281,6 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                 `);
                 
                 printWindow.document.close();
-                
-                // Focus back to POS window immediately
                 window.focus();
             },
             auto_print_pos() {
@@ -215,37 +293,70 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                     <head>
                         <title>Invoice</title>
                         <link rel="stylesheet" href="/assets/styles/vendor/pos_print.css">
+                        <style>
+                            /* Kitchen copy styles */
+                            .kitchen-copy {
+                                margin-top: 50px;
+                                padding-top: 20px;
+                                border-top: 2px dashed #000;
+                                page-break-before: always;
+                            }
+                            .kitchen-items {
+                                width: 100%;
+                                margin-top: 10px;
+                            }
+                            .kitchen-items th {
+                                text-align: left;
+                                border-bottom: 1px solid #000;
+                            }
+                            .kitchen-items td {
+                                padding: 3px 0;
+                            }
+                            .kitchen-header {
+                                text-align: center;
+                                margin-bottom: 10px;
+                            }
+                            .kitchen-footer {
+                                margin-top: 10px;
+                                text-align: center;
+                                font-size: 12px;
+                            }
+                            @media print {
+                                body { 
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                #invoice-POS { 
+                                    width: 80mm;
+                                    margin: 0 auto;
+                                }
+                                .kitchen-copy {
+                                    margin-top: 30mm; /* Space between customer copy and kitchen copy */
+                                }
+                            }
+                        </style>
                         <script>
                             window.onafterprint = function() {
                                 window.close();
                             };
                             
-                            // Fallback mechanism
                             setTimeout(function() {
                                 if (!window.closed) {
                                     window.close();
                                 }
                             }, 3000);
                         <\/script>
-                        <style>
-                            @media print {
-                                body { visibility: hidden; }
-                                #invoice-POS { visibility: visible; position: absolute; left: 0; top: 0; }
-                            }
-                        </style>
                     </head>
                     <body onload="window.print()">${divContents}</body>
                     </html>
                 `);
                 
                 printWindow.document.close();
-                window.focus(); // Return focus to POS window
+                window.focus();
             },
         }
     });
-</script>
-
+  </script>
 
 </body>
-
 </html>

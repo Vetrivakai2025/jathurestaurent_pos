@@ -187,6 +187,8 @@ if ($installed === true) {
                 Route::get('pos/autocomplete_product_pos/{id}', 'PosController@autocomplete_product_pos');
                 // Route::get('invoice_pos/{id}', 'PosController@Print_Invoice_POS');
                 Route::get('pos/{id}', 'PosController@Print_Invoice_POS');
+                Route::get('pos/kitchen/{id}', 'PosController@Print_Invoice_POS_Kitchen');
+
                 //------------------------------- transfers --------------------------\\
                 Route::resource('transfer/transfers', 'TransfersController');
         

@@ -516,6 +516,47 @@ class PosController extends Controller
 
     return abort('403', __('You are not authorized'));
 }
+public function Print_Invoice_POS_Kitchen(Request $request, $id)
+{
+    $user_auth = auth()->user();
+
+    if ($user_auth->can('pos')) {
+        $sale = Sale::with('details.product.unitSale')
+            ->where('deleted_at', '=', null)
+            ->findOrFail($id);
+
+        $item['id'] = $sale->id;
+        $item['Ref'] = $sale->Ref;
+        $item['date'] = Carbon::parse($sale->date)->format('d-m-Y H:i');
+
+        $details = [];
+        foreach ($sale['details'] as $detail) {
+            $unit = Unit::where('id', $detail->sale_unit_id)->first();
+            $name = $detail['product']['name'];
+            if ($detail->product_variant_id) {
+                $productsVariants = ProductVariant::where('id', $detail->product_variant_id)->first();
+                $name = '[' . $productsVariants->name . '] ' . $name;
+            }
+
+            $details[] = [
+                'code' => $detail['product']['code'],
+                'name' => $name,
+                'quantity' => $detail->quantity,
+                'unit_sale' => $unit ? $unit->ShortName : '',
+            ];
+        }
+
+        $settings = Setting::where('deleted_at', '=', null)->first();
+
+        return view('sales.invoice_pos_kitchen', [
+            'setting' => $settings,
+            'sale' => $item,
+            'details' => $details,
+        ]);
+    }
+
+    return abort('403', __('You are not authorized'));
+}
 
 
     // render_price_with_symbol_placement
