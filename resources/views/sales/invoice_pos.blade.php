@@ -34,6 +34,13 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
   padding-bottom:10px;
 }
 
+  .info img {
+    display: block;
+    margin: 0 auto 10px;
+    max-height: 60px;
+  }
+
+
   </style>
 </head>
 
@@ -48,6 +55,7 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
       <!-- Customer Copy (Top Part) -->
       <div class="customer-copy">
         <div class="info">
+          <img src="/images/logo/com_logo.png" alt="Tharmy Cafe Logo" style="max-height: 60px; margin-bottom: 10px;">
           <h2 class="text-center">@{{setting.CompanyName}}</h2>
 
           <p dir="{{ $languageDirection }}"> 
@@ -138,7 +146,7 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
       <!-- Kitchen Copy (Bottom Part) -->
       <div class="kitchen-copy">
         <div class="kitchen-header">
-          <h3 class="text-center">KITCHEN COPY</h3>
+          <h3 class="text-center">KITCHEN ORDER TICKET</h3>
           <p>
             <span>Order #: @{{sale.Ref}} <br></span>
             <span>Date: @{{sale.date}} <br></span>
@@ -237,6 +245,11 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
                             .kitchen-items td {
                                 padding: 3px 0;
                             }
+                                 .info img {
+                            display: block;
+                            margin: 0 auto 10px;
+                            max-height: 60px;
+                          }
                                   .cut-line {
   text-align: center;
   margin: 20px 0;
