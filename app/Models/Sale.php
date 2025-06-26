@@ -10,7 +10,7 @@ class Sale extends Model
 
     protected $fillable = [
         'date', 'Ref', 'is_pos', 'client_id', 'GrandTotal', 'qte_retturn', 'TaxNet', 'tax_rate', 'notes',
-        'total_retturn', 'warehouse_id', 'user_id', 'statut', 'discount', 'shipping',
+        'total_retturn', 'warehouse_id', 'user_id', 'statut', 'discount', 'shipping','table_num',
         'paid_amount', 'payment_statut', 'created_at', 'updated_at', 'deleted_at','discount_type','discount_percent_total'
     ];
 
@@ -25,6 +25,7 @@ class Sale extends Model
         'discount' => 'double',
         'discount_percent_total' => 'double',
         'shipping' => 'double',
+        'table_num' => 'double',
         'TaxNet' => 'double',
         'tax_rate' => 'double',
         'paid_amount' => 'double',

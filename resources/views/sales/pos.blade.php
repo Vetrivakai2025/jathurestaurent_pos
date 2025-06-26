@@ -331,11 +331,7 @@
                               </a>
 
 
-                                 <!-- <a @click="cost(detail.detail_id)"
-                                  title="cost"
-                                  class="cursor-pointer ul-link-action text-primery ">
-                                  <i class="fa fa-shopping-bag" style="margin-left: 18px;"></i>
-                              </a> -->
+                                
 
                               
                           </div>
@@ -384,14 +380,32 @@
                       </div>
 
 
+     <div class="summery-item mb-2 row">
+                        <span class="title mr-2 col-lg-12 col-sm-12" style="color:black;font-weight:800px;">Table Number</span>
+                        
+                        <div class="col-lg-8 col-sm-12">
+                          <validation-provider name="table_num" :rules="{ regex: /^\d*\.?\d*$/}"
+                            v-slot="validationContext">
+
+                            <div class="input-group text-right">
+                              <input :state="getValidationState(validationContext)"
+                                aria-describedby="table_num-feedback" v-model.number="sale.table_num"
+                                @keyup="keyup_table_num()" type="text" class="no-focus form-control pos-table_num">
+                          
+                            </div>
+                            <span class="error">@{{ validationContext.errors[0] }}</span>
+                          </validation-provider>
+                        </div>
+                      </div>
 
 
-    <div class="summery-item mb-2 row">
+
+                            <div class="summery-item mb-2 row">
                           <span class="title mr-4  col-lg-12 col-sm-12">{{ __('translate.Discount') }}</span>
                           <div class="col-lg-8 col-sm-12 summery-item-discount">
                             <validation-provider name="Discount" :rules="{ regex: /^\d*\.?\d*$/}"
                               v-slot="validationContext">
-  <div class="input-group text-right">
+                                 <div class="input-group text-right">
                               <input :state="getValidationState(validationContext)"
                                 aria-describedby="Discount-feedback" v-model.number="sale.discount"
                                 @keyup="keyup_Discount()" type="text" class="no-focus form-control pos-discount"    />
@@ -984,6 +998,7 @@ window.addEventListener('load', () => {
               payment_method_id: @json($default_payment_method),
               tax_rate: 0,
               shipping: 0,
+              table_num:0,
               discount: 0,
               discount_type:"fixed",
               discount_percent_total: 0,
@@ -1428,6 +1443,7 @@ CreatePOS() {
             discount_type: this.sale.discount_type,
             discount_percent_total: this.sale.discount_percent_total ? this.sale.discount_percent_total : 0,
             shipping: this.sale.shipping ? this.sale.shipping : 0,
+            table_num: this.sale.table_num,
             notes: this.sale.notes,
             details: this.details,
             GrandTotal: this.GrandTotal,
@@ -1469,57 +1485,6 @@ CreatePOS() {
 
 // Keep all other existing methods (CaclulTotal, increment, decrement, etc.)
 
-          //--- Submit Validate Create Sale
-        //   Submit_Pos() {
-        //     // Start the progress bar.
-        //     NProgress.start();
-        //     NProgress.set(0.1);
-        //     this.$refs.create_pos.validate().then(success => {
-        //       if (!success) {
-        //         NProgress.done();
-        //         if (this.sale.client_id == "" || this.sale.client_id === null) {
-        //           toastr.error('Veuillez choisir le client');
-                  
-        //         } else if (
-        //           this.sale.warehouse_id == "" ||
-        //           this.sale.warehouse_id === null
-        //         ) {
-        //           toastr.error('Veuillez choisir le Magasin');
-                  
-        //         } else {
-        //           toastr.error('Veuillez remplir correctement le formulaire');
-        //         }
-        //       } else {
-        //         if (this.verifiedForm()) {
-        //           this.pay_now();
-        //         } else {
-        //           NProgress.done();
-        //         }
-        //       }
-        //     });
-        //   },
-
-        //   pay_now(){
-        //       this.payment.montant = this.formatNumber(this.GrandTotal, 2);
-        //       $('#add_payment_sale').modal('show');
-        //       NProgress.done();
-        //   },
-
-        //  //------ Validate Form Submit_Payment
-        //  Submit_Payment() {
-        //       this.$refs.add_payment_sale.validate().then(success => {
-        //           if (!success) {
-        //           toastr.error('Veuillez remplir correctement le formulaire');
-        //           }
-        //           else if (this.payment.montant > this.GrandTotal) {
-        //               toastr.error('The amount to be paid is greater than the total to be paid');
-        //               this.payment.montant = 0;
-        //           }else{
-        //               this.CreatePOS();
-        //           } 
-                  
-        //       });
-        //   },
 
           //---------- keyup paid montant
           Verified_paidAmount() {
@@ -1841,49 +1806,7 @@ CreatePOS() {
        
         
           //----------------------------------Create POS ------------------------------\\
-          // CreatePOS() {
-          //   if (this.verifiedForm()) {
-          //   NProgress.start();
-          //   NProgress.set(0.1);
-           
-          //     this.paymentProcessing = true;
-          //     axios
-          //       .post("/pos/create_pos", {
-          //         date:this.payment.date,
-          //         client_id: this.sale.client_id,
-          //         warehouse_id: this.sale.warehouse_id,
-          //         tax_rate: this.sale.tax_rate?this.sale.tax_rate:0,
-          //         TaxNet: this.sale.TaxNet?this.sale.TaxNet:0,
-          //         discount: this.sale.discount?this.sale.discount:0,
-          //         discount_type: this.sale.discount_type,
-          //         discount_percent_total: this.sale.discount_percent_total?this.sale.discount_percent_total:0,
-          //         shipping: this.sale.shipping?this.sale.shipping:0,
-          //         notes: this.sale.notes,
-          //         details: this.details,
-          //         GrandTotal: this.GrandTotal,
-          //         payment_method_id: this.payment.payment_method_id,
-          //         account_id: this.payment.account_id,
-          //         payment_notes: this.payment.notes,
-          //         montant : parseFloat(this.payment.montant).toFixed(2),
-                 
-                 
-          //       })
-          //       .then(response => {
-          //         if (response.data.success === true) {
-          //           NProgress.done();
-          //           this.paymentProcessing = false;
-          //           toastr.success('{{ __('translate.Created_in_successfully') }}');
-          //           window.open("/pos/" + response.data.id, "_blank");
-          //           window.location.reload();
-          //         }
-          //       })
-          //       .catch(error => {
-          //         NProgress.done();
-          //         this.paymentProcessing = false;
-          //         toastr.error('{{ __('translate.There_was_something_wronge') }}');
-          //       });
-          //     }
-          // },
+   
           //------------------------------Formetted Numbers -------------------------\\
           formatNumber(number, dec) {
             const value = (typeof number === "string"
@@ -1906,6 +1829,7 @@ CreatePOS() {
               this.product.discount_Method = "2";
               this.product.product_id = response.data.id;
               this.product.image = response.data.image;
+              this.product.table_num = response.data.table_num;
               this.product.name = response.data.name;
               this.product.takeaway = response.data.takeaway;
               this.product.product_type = response.data.product_type;

@@ -25,6 +25,7 @@ class CreateSaleDetailsTable extends Migration {
 			$table->integer('sale_unit_id')->nullable()->index('sales_sale_unit_id');
 			$table->float('TaxNet', 10, 0)->nullable();
 			$table->string('tax_method', 192)->nullable()->default('1');
+			$table->float('table_num', 10, 0)->nullable()->default(0);
 			$table->float('discount', 10, 0)->nullable();
 			$table->string('discount_method', 192)->nullable()->default('1');
 			$table->float('total', 10, 0);

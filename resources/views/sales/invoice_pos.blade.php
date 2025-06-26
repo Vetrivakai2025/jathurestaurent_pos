@@ -142,6 +142,10 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
           <p>
             <span>Order #: @{{sale.Ref}} <br></span>
             <span>Date: @{{sale.date}} <br></span>
+           <span style="color: red; font-weight: bold; font-size: 16px;">
+  Table Number: @{{ sale.table_num }} <br>
+</span>
+
             <span v-show="pos_settings.show_customer">Customer: @{{sale.client_name}} <br></span>
           </p>
         </div>

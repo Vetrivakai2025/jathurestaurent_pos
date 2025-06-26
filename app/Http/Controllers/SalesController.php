@@ -340,6 +340,7 @@ class SalesController extends Controller
                 $order->discount_percent_total = $request->discount_percent_total;
 
                 $order->shipping = $request->shipping;
+                $order->table_num = $request->table_num ?? null;m;
                 $order->statut = 'completed';
                 $order->payment_statut = 'unpaid';
                 $order->notes = $request->notes;
@@ -357,6 +358,7 @@ class SalesController extends Controller
                         'quantity' => $value['quantity'],
                         'price' => $value['Unit_price'],
                         'TaxNet' => $value['tax_percent'],
+                        
                         'tax_method' => $value['tax_method'],
                         'discount' => $value['discount'],
                         'discount_method' => $value['discount_Method'],

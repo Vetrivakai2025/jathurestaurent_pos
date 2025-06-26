@@ -453,8 +453,10 @@ class PosController extends Controller
         }
 
         $item['shipping'] = $this->render_price_with_symbol_placement(number_format($sale->shipping, 2, '.', ','));
+       
         $item['taxe'] = $this->render_price_with_symbol_placement(number_format($sale->TaxNet, 2, '.', ','));
         $item['tax_rate'] = $sale->tax_rate;
+         $item['table_num'] = $sale->table_num;
         $item['client_name'] = $sale['client']->username;
         $item['warehouse_name'] = $sale['warehouse']->name;
         $item['GrandTotal'] = $this->render_price_with_symbol_placement(number_format($sale->GrandTotal, 2, '.', ','));
@@ -578,7 +580,7 @@ public function Print_Invoice_POS_Kitchen(Request $request, $id)
     //------------ Create New  POS --------------\\
 
     public function CreatePOS(Request $request)
-    {
+    { 
         request()->validate([
             'client_id' => 'required',
             'warehouse_id' => 'required',
@@ -598,6 +600,7 @@ public function Print_Invoice_POS_Kitchen(Request $request, $id)
             $order->discount_type = $request->discount_type;
             $order->discount_percent_total = $request->discount_percent_total;
             $order->shipping = $request->shipping;
+            $order->table_num = $request->table_num ?? null;
             $order->GrandTotal = $request->GrandTotal;
             $order->notes = $request->notes;
             $order->statut = 'completed';
@@ -622,6 +625,7 @@ public function Print_Invoice_POS_Kitchen(Request $request, $id)
                     'price'              => $value['Unit_price'],
                     'TaxNet'             => $value['tax_percent'],
                     'tax_method'         => $value['tax_method'],
+                   
                     'discount'           => $value['discount'],
                     'discount_method'    => $value['discount_Method'],
                     'imei_number'        => $value['imei_number'],

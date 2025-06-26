@@ -28,6 +28,7 @@ class CreateSalesTable extends Migration {
 			$table->string('discount_type', 192);
 			$table->float('discount_percent_total', 10, 0)->nullable()->default(0);
 			$table->float('shipping', 10, 0)->nullable()->default(0);
+			$table->float('table_num', 10, 0)->nullable()->default(0);
 			$table->float('GrandTotal', 10, 0)->default(0);
 			$table->float('paid_amount', 10, 0)->default(0);
 			$table->string('payment_statut', 192);
