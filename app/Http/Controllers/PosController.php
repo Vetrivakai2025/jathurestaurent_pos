@@ -723,13 +723,27 @@ public function Print_Invoice_POS_Kitchen(Request $request, $id)
             . "💵 Grand Total: {$request->GrandTotal} LKR\n"
             . "📅 Date: " . now()->format('d M Y h:i A');
 
-        // Send Telegram message
-        Http::get("https://api.telegram.org/bot{$botToken}/sendMessage", [
+        
+$telegramUrl = "https://api.telegram.org/bot{$botToken}/sendMessage";
+
+try {
+    // Test if Telegram server is reachable
+    $response = Http::timeout(2)->get("https://api.telegram.org");
+
+    if ($response->ok()) {
+        // Only send message if server is reachable
+        Http::post($telegramUrl, [
             'chat_id' => $chatId,
             'text' => $message,
             'parse_mode' => 'Markdown',
         ]);
-
+    } else {
+        \Log::warning("Telegram API not reachable, message skipped.");
+    }
+} catch (\Exception $e) {
+    // Log error but continue execution
+    \Log::error("Telegram message failed: " . $e->getMessage());
+}
 
         return response()->json(['success' => true, 'id' => $item]);
 
