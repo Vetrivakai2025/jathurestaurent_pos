@@ -37,7 +37,6 @@
   <script src="{{ asset('js/plugin-script/alpine-store.js') }}"></script>
 
 <style>
-
     .client-option {
         padding: 8px;
         line-height: 1.4;
@@ -86,8 +85,188 @@
     .card-list-products {
         padding-bottom: 80px; /* Prevents button overlap */
     }
-</style>
+    
+    /* NEW STYLES FOR REDESIGN */
+    .category-buttons-container {
+        display: flex;
+        overflow-x: auto;
+        padding: 10px 0;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 10px;
+    }
+    
+    .category-button {
+        flex: 0 0 auto;
+        margin: 0 5px;
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
+    
+    .category-button.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    
+    .category-button:hover {
+        background: #e9ecef;
+    }
+    
+    .category-button.active:hover {
+        background: #0056b3;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .product-card {
+        height: 304px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .product-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .product-card img {
+        max-height: 192px;
+        max-width: 100%;
+        object-fit: contain;
+        margin-bottom: 8px;
+    }
+    
+    .product-card p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.2;
+        max-height: 28px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .product-card h6 {
+        margin: 5px 0 0;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .product-card .quantity {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-size: 10px;
+    }
+    
+    /* Layout adjustments */
+    .pos-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .pos-main-container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        gap: 20px;
+            margin-top: 11px;
 
+    }
+    
+    .pos-left-panel {
+        flex: 0 0 35%;
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+    }
+    
+    .pos-right-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+    }
+    
+    .products-container {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        .products-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .pos-main-container {
+            flex-direction: column;
+        }
+        
+        .pos-left-panel, .pos-right-panel {
+            flex: 1;
+            width: 100%;
+        }
+        
+        .products-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .category-buttons-container {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .category-button {
+            margin: 3px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
 
 </head>
  
@@ -104,14 +283,13 @@
       @include('layouts.new-sidebar.sidebar')
     </div>
 
-
     <div class="layout-content">
       @include('layouts.new-sidebar.header')
 
       <div class="content-section" id="main-pos">
        
-              <!-- Invoice Modal -->
-                <div v-if="isInvoiceModalVisible" class="modal fade show d-block" tabindex="-1" role="dialog">
+        <!-- Invoice Modal -->
+        <div v-if="isInvoiceModalVisible" class="modal fade show d-block" tabindex="-1" role="dialog">
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -131,9 +309,7 @@
         <!-- Optional overlay -->
         <div v-if="isInvoiceModalVisible" class="modal-backdrop fade show"></div>
 
-
-
-              <!-- Add Customer Modal -->
+        <!-- Add Customer Modal -->
         <div class="modal fade" :class="{ 'show d-block': showCustomerModal }" tabindex="-1">
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -178,10 +354,9 @@
           </div>
         </div>
 
-
         <section class="pos-content">
           <div class="d-flex align-items-center">
-            <div class="w-100 text-gray-600 position-relative">
+            <div class="w-50 text-gray-600 position-relative">
               <div id="autocomplete" class="autocomplete">
                 <input type="text"
                   class="form-control border border-gray-300 py-3 pr-3"
@@ -199,57 +374,29 @@
                 </span>
               </div>
             </div>
+            <div class="w-50 text-gray-600 position-relative" style="
+    display: flex;
+    align-items: center;
+    justify-content: end;
+">
+               <!-- Add Customer Button -->
+          <button style="margin-top: 20px;" @click="showCustomerModal = true;" class="btn btn-outline-success">
+              <i class="i-Business-Mens me-2"></i> {{ __('translate.Add Client') }}
+          </button>
+
+          <button style="margin-top: 20px;" @click="openCustomerScreen" class="btn btn-info">
+              Open Customer Display
+          </button>
+`
+            </div>
           </div>
- <!-- Add Customer Button -->
-        <button style="margin-top: 20px;" @click="showCustomerModal = true;" class="btn btn-outline-success">
-            <i class="i-Business-Mens me-2"></i> {{ __('translate.Add Client') }}
-        </button>
-
-
-
-
-
-
-        
-        <button style="margin-top: 20px;" @click="openCustomerScreen" class="btn btn-info">
-            Open Customer Display
-        </button>
-
-
-
-
-
-
-
-
-          <div class="row pos-card-left">
-            <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
-              
-
-
-
-
-
-
-
-<!-- this is  left side  form -->
-
-<!-- this is  left side  form -->
-
-<!-- this is  left side  form -->
-
-
-
-
-
+          
+         
+          <div class="pos-main-container">
+            <!-- Left Panel - Bill and Cart Section -->
+            <div class="pos-left-panel">
               <validation-observer ref="create_pos">
-
-
-
-
-              
                 <form>
-
                   <!-- Customer -->
                   <div class="filter-box">
                     <validation-provider name="Customer" rules="required" v-slot="{ valid, errors }">
@@ -305,10 +452,7 @@
                           <img :src="'/images/products/'+detail.image" alt="">
                           <div>
                             <p class="text-gray-600 m-0 font_12">@{{detail.name}}</p>
-                            
                             <p class="text-gray-600 m-0 font_12"> Takeaway Cost = Rs@{{detail.takeaway}}</p>
-                       
- 
                             @if($symbol_placement == 'before')
                               <h6 class="fw-semibold m-0 font_16">{{$currency}} @{{detail.subtotal.toFixed(2)}}</h6>
                             @else
@@ -321,19 +465,11 @@
                                   <i class="i-Edit"></i>
                               </a>
 
-
-
-                            
                               <a @click="delete_Product_Detail(detail.detail_id)"
                                   title="Delete"
                                   class="cursor-pointer ul-link-action text-danger">
                                   <i class="i-Close-Window"></i>
                               </a>
-
-
-                                
-
-                              
                           </div>
                         </div>
                         <div class="d-flex align-items-center">
@@ -349,58 +485,44 @@
                       </div>
                     </div>
 
-
-
-
-
-
-
-
-
-
                     <div class="cart-summery">
-                      
-                    <div>
-                      <div class="summery-item mb-2 row">
-                        <span class="title mr-2 col-lg-12 col-sm-12">Take Away</span>
-                        
-                        <div class="col-lg-8 col-sm-12">
-                          <validation-provider name="Shipping" :rules="{ regex: /^\d*\.?\d*$/}"
-                            v-slot="validationContext">
-
-                            <div class="input-group text-right">
-                              <input :state="getValidationState(validationContext)"
-                                aria-describedby="Shipping-feedback" v-model.number="sale.shipping"
-                                @keyup="keyup_Shipping()" type="text" class="no-focus form-control pos-shipping">
-                              <span class="input-group-text cursor-pointer" id="basic-addon3">$</span>
-                            </div>
-                            <span class="error">@{{ validationContext.errors[0] }}</span>
-                          </validation-provider>
-                        </div>
-                      </div>
-
-
-     <div class="summery-item mb-2 row">
-                        <span class="title mr-2 col-lg-12 col-sm-12" style="color:black;font-weight:800px;">Table Number</span>
-                        
-                        <div class="col-lg-8 col-sm-12">
-                          <validation-provider name="table_num" :rules="{ regex: /^\d*\.?\d*$/}"
-                            v-slot="validationContext">
-
-                            <div class="input-group text-right">
-                              <input :state="getValidationState(validationContext)"
-                                aria-describedby="table_num-feedback" v-model.number="sale.table_num"
-                                @keyup="keyup_table_num()" type="text" class="no-focus form-control pos-table_num">
+                      <div>
+                        <div class="summery-item mb-2 row">
+                          <span class="title mr-2 col-lg-12 col-sm-12">Take Away</span>
                           
-                            </div>
-                            <span class="error">@{{ validationContext.errors[0] }}</span>
-                          </validation-provider>
+                          <div class="col-lg-8 col-sm-12">
+                            <validation-provider name="Shipping" :rules="{ regex: /^\d*\.?\d*$/}"
+                              v-slot="validationContext">
+
+                              <div class="input-group text-right">
+                                <input :state="getValidationState(validationContext)"
+                                  aria-describedby="Shipping-feedback" v-model.number="sale.shipping"
+                                  @keyup="keyup_Shipping()" type="text" class="no-focus form-control pos-shipping">
+                                <span class="input-group-text cursor-pointer" id="basic-addon3">$</span>
+                              </div>
+                              <span class="error">@{{ validationContext.errors[0] }}</span>
+                            </validation-provider>
+                          </div>
                         </div>
-                      </div>
 
+                        <div class="summery-item mb-2 row">
+                          <span class="title mr-2 col-lg-12 col-sm-12" style="color:black;font-weight:800px;">Table Number</span>
+                          
+                          <div class="col-lg-8 col-sm-12">
+                            <validation-provider name="table_num" :rules="{ regex: /^\d*\.?\d*$/}"
+                              v-slot="validationContext">
 
+                              <div class="input-group text-right">
+                                <input :state="getValidationState(validationContext)"
+                                  aria-describedby="table_num-feedback" v-model.number="sale.table_num"
+                                  @keyup="keyup_table_num()" type="text" class="no-focus form-control pos-table_num">
+                              </div>
+                              <span class="error">@{{ validationContext.errors[0] }}</span>
+                            </validation-provider>
+                          </div>
+                        </div>
 
-                            <div class="summery-item mb-2 row">
+                        <div class="summery-item mb-2 row">
                           <span class="title mr-4  col-lg-12 col-sm-12">{{ __('translate.Discount') }}</span>
                           <div class="col-lg-8 col-sm-12 summery-item-discount">
                             <validation-provider name="Discount" :rules="{ regex: /^\d*\.?\d*$/}"
@@ -409,9 +531,6 @@
                               <input :state="getValidationState(validationContext)"
                                 aria-describedby="Discount-feedback" v-model.number="sale.discount"
                                 @keyup="keyup_Discount()" type="text" class="no-focus form-control pos-discount"    />
-
-
-               
                               <span class="error">@{{ validationContext.errors[0] }}</span>   </div>
                             </validation-provider>
                             <select class="input-group-text discount-select-type" id="inputGroupSelect02"
@@ -422,7 +541,7 @@
                         </div>
                       </div>
 
-                  <div class="summery-item mb-2 row">                                             
+                      <div class="summery-item mb-2 row">                                             
                         <div class="col-lg-8 col-sm-12">
                           <validation-provider name="date" rules="required" v-slot="validationContext">
                                     <div class="form-group">
@@ -441,7 +560,6 @@
                                   </validation-provider>
                         </div>
                       </div>
-
 
                       <div class="summery-item mb-2 row">
                         <div class="col-lg-8 col-sm-12">
@@ -515,7 +633,6 @@
                         </div>
                       </div>
 
-
                       <div class="summery-item mb-3 row">
                         <div class="col-lg-8 col-sm-12">
                           <validation-provider name="Payment choice" rules="required" v-slot="{ valid, errors }">
@@ -563,307 +680,160 @@
 
                 </form>
               </validation-observer>
-
-
-
-
-
-<!--  end   this is  left side  form -->
-
-
-<!--  end   this is  left side  form -->
-
-
-
-<!--  end   this is  left side  form -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- this is pop up page  -->
-
-<validation-observer ref="thankyou">
-  <div class="modal fade" id="thankyouModal" tabindex="-1" role="dialog" aria-labelledby="thankyouModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content text-center">
-        <div class="modal-header">
-          <h5 class="modal-title" id="thankyouModalLabel">{{ __('translate.Thank_You') }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <h3>{{ __('translate.Thank_you_for_your_order') }}</h3>
-          <p>{{ __('translate.Your_order_has_been_successfully_completed') }}</p>
-        </div>
-        <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{ __('translate.Close') }}</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</validation-observer>
-
-
-
-
-
-
-              <!-- Modal add sale payment -->
-               <validation-observer ref="add_payment_sale">
-                <div class="modal fade" id="add_payment_sale" tabindex="-1" role="dialog"
-                  aria-labelledby="add_payment_sale" aria-hidden="true">
-                  <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">{{ __('translate.AddPayment') }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <form @submit.prevent="Submit_Payment()">
-                          <div class="row">
-
-                              <div class="col-md-6">
-                                  <validation-provider name="date" rules="required" v-slot="validationContext">
-                                    <div class="form-group">
-                                      <label for="picker3">{{ __('translate.Date') }}</label>
-                  
-                                      <input type="text" 
-                                        :state="getValidationState(validationContext)" 
-                                        aria-describedby="date-feedback" 
-                                        class="form-control" 
-                                        placeholder="{{ __('translate.Select_Date') }}"  
-                                        id="datetimepicker" 
-                                        v-model="payment.date">
-                  
-                                      <span class="error">@{{  validationContext.errors[0] }}</span>
-                                    </div>
-                                  </validation-provider>
-                                </div>
-
-                            <!-- Paying_Amount -->
-                            <div class="form-group col-md-6">
-                              <validation-provider name="Montant à payer"
-                                :rules="{ required: true , regex: /^\d*\.?\d*$/}" v-slot="validationContext">
-                                <label for="Paying_Amount">{{ __('translate.Paying_Amount') }}
-                                  <span class="field_required">*</span></label>
-                                <input @keyup.enter="Submit_Pos" @keyup="Verified_paidAmount(payment.montant)"
-                                  :state="getValidationState(validationContext)"
-                                  aria-describedby="Paying_Amount-feedback" v-model.number="payment.montant"
-                                  placeholder="{{ __('translate.Paying_Amount') }}" type="text" class="form-control">
-                                <div class="error">
-                                  @{{ validationContext.errors[0] }}</div>
-
-                                @if($symbol_placement == 'before')
-                                   <span class="badge badge-danger mt-2">{{ __('translate.Total') }} : {{$currency}}  @{{GrandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}} </span>
-                                @else
-                                   <span class="badge badge-danger mt-2">{{ __('translate.Total') }} : @{{GrandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}} {{$currency}}</span>
-                                @endif
-
-                              </validation-provider>
-                            </div>
-
-                            <div class="form-group col-md-6">
-
-
-
- 
-
-
-                              <validation-provider name="Payment choice" rules="required"
-                                  v-slot="{ valid, errors }">
-                                  <label> {{ __('translate.Payment_choice') }}<span
-                                          class="field_required">*</span></label>
-                                  <v-select @input="Selected_Payment_Method" 
-                                        placeholder="{{ __('translate.Choose_Payment_Choice') }}"
-                                      :class="{'is-invalid': !!errors.length}"
-                                      :state="errors[0] ? false : (valid ? true : null)"
-                                      v-model="payment.payment_method_id" :reduce="(option) => option.value" 
-                                      :options="payment_methods.map(payment_methods => ({label: payment_methods.title, value: payment_methods.id}))">
-
-                                  </v-select>
-                                  <span class="error">@{{ errors[0] }}</span>
-                              </validation-provider>
-                          </div>
-
-                          <div class="form-group col-md-6">
-                            
-
-                          </div>
-
-                            <div class="form-group col-md-6">
-                             
-                            </div>
-
-                            <div class="form-group col-md-6">
-                            
-                            </div>
-                          </div>
-
-                          <div class="row mt-3">
-
-                            <div class="col-lg-6">
-                              <button type="submit" class="btn btn-primary" :disabled="paymentProcessing">
-                                <span v-if="paymentProcessing" class="spinner-border spinner-border-sm" role="status"
-                                  aria-hidden="true"></span> <i class="i-Yes me-2 font-weight-bold"></i>
-                                {{ __('translate.Submit') }}
-                              </button>
-
-                            </div>
-
-                          </div>
-
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-             </validation-observer>
-
-
-
-
-
-
-<!-- this is pop up page  -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             </div>
 
-            <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 mt-3">
-              <div class="row">
-                <div class="col-12 col-lg-8">
-                  <div class="row">
+            <!-- Right Panel - Category and Product List Section -->
+            <div class="pos-right-panel">
+              <!-- Category Buttons -->
+              <div class="category-buttons-container">
+                <div class="category-button" 
+                     :class="{ 'active': category_id === '' }" 
+                     @click="Selected_Category('')">
+                  {{ __('translate.All_Category') }}
+                </div>
+                <div class="category-button" 
+                     v-for="category in categories" 
+                     :key="category.id"
+                     :class="{ 'active': category.id === category_id }" 
+                     @click="Selected_Category(category.id)">
+                  @{{ category.name }}
+                </div>
+              </div>
 
-                    <div class="col-lg-4 col-md-6 col-sm-6" v-for="product in products"
-                      @click="Check_Product_Exist(product , product.id)">
-                      <div class="card product-card cursor-pointer">
-                        <img :src="'/images/products/'+product.image" alt="">
-                        <div class="card-body pos-card-product">
-                          <p class="text-gray-600">@{{product.name}}</p>
-                          <h6 class="title m-0"> @{{product.Net_price}}</h6>
-                        </div>
-                        <div class="quantity">
-                          <span>@{{formatNumber(product.qte_sale , 2)}} @{{product.unitSale}}</span>
-                        </div>
-                      </div>
+              <div class="products-container">
+                <!-- Products Grid (5x8) -->
+                <div class="products-grid">
+                  <div class="product-card" v-for="product in products" :key="product.id"
+                    @click="Check_Product_Exist(product, product.id)">
+                    <img :src="'/images/products/'+product.image" :alt="product.name">
+                    <p class="text-gray-600">@{{product.name}}</p>
+                    <h6 class="title m-0">@{{product.Net_price}}</h6>
+                    <div class="quantity">
+                      <span>@{{formatNumber(product.qte_sale, 2)}} @{{product.unitSale}}</span>
                     </div>
-
-                    <div class="d-flex justify-content-center">
-                        <b-pagination @change="Product_onPageChanged" :total-rows="product_totalRows"
-                            :per-page="product_perPage" v-model="product_currentPage">
-                        </b-pagination>
-                    </div>
-                   
                   </div>
                 </div>
 
-                <div class="d-md-block col-12 col-lg-4">
-                  <div class="card category-card">
-                    <div class="category-head">
-                      <h5 class="fw-semibold m-0">{{ __('translate.All_Category') }}</h5>
-                    </div>
-                    <ul class="p-0">
-                        <li class="category-item" @click="Selected_Category('')" :class="{ 'active': category_id === '' }">
-                          <i class="i-Bookmark"></i> {{ __('translate.All_Category') }}
-                        </li>
-                        <li class="category-item" @click="Selected_Category(category.id)"  v-for="category in categories" :key="category.id" :class="{ 'active': category.id === category_id }">
-                          <i class="i-Bookmark"></i> @{{ category.name }}
-                        </li>
-                      </ul>
-                      <nav aria-label="Page navigation example mt-3">
-                        <ul class="pagination justify-content-center">
-                          <li class="page-item" :class="{ 'disabled': currentPage_cat == 1 }">
-                            <a class="page-link" href="#" aria-label="Previous" @click.prevent="previousPage_Category">
-                              <span aria-hidden="true">&laquo;</span>
-                            </a>
-                          </li>
-                          <li class="page-item" v-for="i in pages_cat" :key="i" :class="{ 'active': currentPage_cat == i }">
-                            <a class="page-link" href="#" @click.prevent="goToPage_Category(i)">@{{ i }}</a>
-                          </li>
-                          <li class="page-item" :class="{ 'disabled': currentPage_cat == pages_cat }">
-                            <a class="page-link" href="#" aria-label="Next" @click.prevent="nextPage_Category">
-                              <span aria-hidden="true">&raquo;</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </nav>
-                        
-                  </div>
-
-                  <div class="card category-card">
-                    <div class="category-head">
-                      <h5 class="fw-semibold m-0">{{ __('translate.All_brands') }}</h5>
-                    </div>
-                    <ul class="p-0">
-                        <li class="category-item" @click="Selected_Brand('')" :class="{ 'active': brand_id === '' }">
-                          <i class="i-Bookmark"></i> {{ __('translate.All_brands') }}
-                        </li>
-                      <li class="category-item" @click="Selected_Brand(brand.id)" v-for="brand in brands" :key="brand.id" :class="{ 'active': brand.id === brand_id }">
-                        <i class="i-Bookmark"></i> @{{ brand.name }}</li>
-                    </ul>
-                      <nav aria-label="Page navigation example mt-3">
-                        <ul class="pagination justify-content-center">
-                          <li class="page-item" :class="{ 'disabled': currentPage_brand == 1 }">
-                            <a class="page-link" href="#" aria-label="Previous" @click.prevent="previousPage_brand">
-                              <span aria-hidden="true">&laquo;</span>
-                            </a>
-                          </li>
-                          <li class="page-item" v-for="i in pages_brand" :key="i" :class="{ 'active': currentPage_brand == i }">
-                            <a class="page-link" href="#" @click.prevent="goToPage_brand(i)">@{{ i }}</a>
-                          </li>
-                          <li class="page-item" :class="{ 'disabled': currentPage_brand == pages_brand }">
-                            <a class="page-link" href="#" aria-label="Next" @click.prevent="nextPage_brand">
-                              <span aria-hidden="true">&raquo;</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </nav>
-                      
-
-                  </div>
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center">
+                  <b-pagination @change="Product_onPageChanged" :total-rows="product_totalRows"
+                    :per-page="product_perPage" v-model="product_currentPage">
+                  </b-pagination>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- Thank you modal -->
+          <validation-observer ref="thankyou">
+            <div class="modal fade" id="thankyouModal" tabindex="-1" role="dialog" aria-labelledby="thankyouModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content text-center">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="thankyouModalLabel">{{ __('translate.Thank_You') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <h3>{{ __('translate.Thank_you_for_your_order') }}</h3>
+                    <p>{{ __('translate.Your_order_has_been_successfully_completed') }}</p>
+                  </div>
+                  <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{ __('translate.Close') }}</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </validation-observer>
+
+          <!-- Modal add sale payment -->
+          <validation-observer ref="add_payment_sale">
+            <div class="modal fade" id="add_payment_sale" tabindex="-1" role="dialog"
+              aria-labelledby="add_payment_sale" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">{{ __('translate.AddPayment') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form @submit.prevent="Submit_Payment()">
+                      <div class="row">
+                          <div class="col-md-6">
+                              <validation-provider name="date" rules="required" v-slot="validationContext">
+                                <div class="form-group">
+                                  <label for="picker3">{{ __('translate.Date') }}</label>
+              
+                                  <input type="text" 
+                                    :state="getValidationState(validationContext)" 
+                                    aria-describedby="date-feedback" 
+                                    class="form-control" 
+                                    placeholder="{{ __('translate.Select_Date') }}"  
+                                    id="datetimepicker" 
+                                    v-model="payment.date">
+              
+                                  <span class="error">@{{  validationContext.errors[0] }}</span>
+                                </div>
+                              </validation-provider>
+                            </div>
+
+                        <!-- Paying_Amount -->
+                        <div class="form-group col-md-6">
+                          <validation-provider name="Montant à payer"
+                            :rules="{ required: true , regex: /^\d*\.?\d*$/}" v-slot="validationContext">
+                            <label for="Paying_Amount">{{ __('translate.Paying_Amount') }}
+                              <span class="field_required">*</span></label>
+                            <input @keyup.enter="Submit_Pos" @keyup="Verified_paidAmount(payment.montant)"
+                              :state="getValidationState(validationContext)"
+                              aria-describedby="Paying_Amount-feedback" v-model.number="payment.montant"
+                              placeholder="{{ __('translate.Paying_Amount') }}" type="text" class="form-control">
+                            <div class="error">
+                              @{{ validationContext.errors[0] }}</div>
+
+                            @if($symbol_placement == 'before')
+                               <span class="badge badge-danger mt-2">{{ __('translate.Total') }} : {{$currency}}  @{{GrandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}} </span>
+                            @else
+                               <span class="badge badge-danger mt-2">{{ __('translate.Total') }} : @{{GrandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}} {{$currency}}</span>
+                            @endif
+
+                          </validation-provider>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                          <validation-provider name="Payment choice" rules="required"
+                              v-slot="{ valid, errors }">
+                              <label> {{ __('translate.Payment_choice') }}<span
+                                      class="field_required">*</span></label>
+                              <v-select @input="Selected_Payment_Method" 
+                                    placeholder="{{ __('translate.Choose_Payment_Choice') }}"
+                                  :class="{'is-invalid': !!errors.length}"
+                                  :state="errors[0] ? false : (valid ? true : null)"
+                                  v-model="payment.payment_method_id" :reduce="(option) => option.value" 
+                                  :options="payment_methods.map(payment_methods => ({label: payment_methods.title, value: payment_methods.id}))">
+
+                              </v-select>
+                              <span class="error">@{{ errors[0] }}</span>
+                          </validation-provider>
+                      </div>
+
+                      <div class="row mt-3">
+                        <div class="col-lg-6">
+                          <button type="submit" class="btn btn-primary" :disabled="paymentProcessing">
+                            <span v-if="paymentProcessing" class="spinner-border spinner-border-sm" role="status"
+                              aria-hidden="true"></span> <i class="i-Yes me-2 font-weight-bold"></i>
+                            {{ __('translate.Submit') }}
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+         </validation-observer>
         </section>
       </div>
     </div>
   </div>
-  {{-- -----------------------------------------------------------------------------------------------}}
-
 
   <script type="text/javascript">
     $(window).on('load', function(){
@@ -873,12 +843,12 @@
       app.Get_Products_By_Warehouse(app.sale.warehouse_id);
       app.paginate_products(app.product_perPage, 0);
       jQuery("pos-layout").show(); // will fade out the whole DIV that covers the website.
-      
-  });
-</script>
+    });
+  </script>
 
   {{-- vue js --}}
   <script src="{{ asset('assets/js/vue.js') }}"></script>
+
 
 
 
