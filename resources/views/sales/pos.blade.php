@@ -1005,7 +1005,7 @@ window.addEventListener('load', () => {
             isInvoiceModalVisible: false,
             categories: [],
             currentPage_cat: 1,
-            perPage_cat: 4,
+            perPage_cat: 50,
             pages_cat: 0,
             payment_methods:@json($payment_methods),
             accounts:@json($accounts),
