@@ -160,7 +160,7 @@ class PosController extends Controller
     public function GetProductsByParametre(request $request)
     {
          // How many items do you want to display.
-         $perPage = 8;
+         $perPage = 18;
          $pageStart = \Request::get('page', 1);
          // Start displaying items from this number;
          $offSet = ($pageStart * $perPage) - $perPage;
@@ -201,7 +201,7 @@ class PosController extends Controller
 
         $product_warehouse_data = $product_warehouse_data
             ->offset($offSet)
-            ->limit(8)
+            ->limit(18)
             ->get();
 
         foreach ($product_warehouse_data as $product_warehouse) {

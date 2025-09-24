@@ -89,6 +89,7 @@
     /* NEW STYLES FOR REDESIGN */
     .category-buttons-container {
         display: flex;
+        flex-wrap: wrap;
         overflow-x: auto;
         padding: 10px 0;
         margin-bottom: 15px;
@@ -124,70 +125,77 @@
         background: #0056b3;
     }
     
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    
-    .product-card {
-        height: 304px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .product-card:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
-    }
-    
-    .product-card img {
-        max-height: 192px;
-        max-width: 100%;
-        object-fit: contain;
-        margin-bottom: 8px;
-    }
-    
-    .product-card p {
-        margin: 0;
-        font-size: 12px;
-        line-height: 1.2;
-        max-height: 28px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-    }
-    
-    .product-card h6 {
-        margin: 5px 0 0;
-        font-size: 14px;
-        font-weight: bold;
-    }
-    
-    .product-card .quantity {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        background: rgba(0,0,0,0.7);
-        color: white;
-        padding: 2px 6px;
-        border-radius: 10px;
-        font-size: 10px;
-    }
-    
+.products-grid {
+       display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+
+.product-card {
+    height: 228px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Changed from center */
+    padding: 15px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.product-card img {
+    max-height: 160px; /* Slightly reduced */
+    max-width: 100%;
+    object-fit: contain;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.product-card p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.3;
+    max-height: 32px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+    flex-shrink: 0;
+}
+
+.product-card h6 {
+    margin: 8px 0 0;
+    font-size: 14px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.product-card .quantity {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+}
+   
     /* Layout adjustments */
     .pos-content {
         display: flex;
@@ -1062,10 +1070,10 @@ window.addEventListener('load', () => {
                 account_id: "",
             },
             currentPage: 1,
-            perPage: 6,
+            perPage: 10,
             product_currentPage: 1,
             paginated_Products: "",
-            product_perPage: 8,
+            product_perPage: 10,
             product_totalRows: @json($totalRows),
             category_id: "",
             brand_id: "",
@@ -1426,6 +1434,7 @@ window.addEventListener('load', () => {
           },
 
           Product_onPageChanged(page) {
+           // console.log("Per page:", this.product_perPage);
             this.paginate_products(this.product_perPage, page - 1);
             this.getProducts(page);
           },
