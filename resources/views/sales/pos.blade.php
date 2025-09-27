@@ -392,10 +392,10 @@
               <i class="i-Business-Mens me-2"></i> {{ __('translate.Add Client') }}
           </button>
 
-          <button style="margin-top: 20px;" @click="openCustomerScreen" class="btn btn-info">
+          <!-- <button style="margin-top: 20px;"  class="btn btn-info">
               Open Customer Display
           </button>
-`
+` -->
             </div>
           </div>
           
@@ -1044,7 +1044,7 @@ window.addEventListener('load', () => {
             details: [],
             detail: {},
 
-            customerWindow: null,
+          //  customerWindow: null,
 
             sale: {
               sale: "",
@@ -1141,12 +1141,12 @@ window.addEventListener('load', () => {
         watch: {
           details: {
             handler() {
-              this.updateCustomerScreen();
+            //  this.updateCustomerScreen();
             },
             deep: true
           },
           total() {
-            this.updateCustomerScreen();
+           // this.updateCustomerScreen();
           }
         },
 
@@ -1230,80 +1230,81 @@ window.addEventListener('load', () => {
               openCustomerScreen() {
                 // Check if window already exists
                 if (!this.customerWindow || this.customerWindow.closed) {
-                    // Try to position on secondary screen
-                    const dualScreenLeft = window.screenLeft !== undefined 
-                        ? window.screenLeft 
-                        : window.screenX;
-                    const dualScreenTop = window.screenTop !== undefined 
-                        ? window.screenTop 
-                        : window.screenY;
+                    // // Try to position on secondary screen
+                    // const dualScreenLeft = window.screenLeft !== undefined 
+                    //     ? window.screenLeft 
+                    //     : window.screenX;
+                    // const dualScreenTop = window.screenTop !== undefined 
+                    //     ? window.screenTop 
+                    //     : window.screenY;
                     
-                    const width = 600;
-                    const height = 800;
+                    // const width = 600;
+                    // const height = 800;
                     
-                    // Calculate position for secondary display (assuming horizontal extension)
-                    const left = dualScreenLeft + window.outerWidth;
-                    const top = dualScreenTop;
+                    // // Calculate position for secondary display (assuming horizontal extension)
+                    // const left = dualScreenLeft + window.outerWidth;
+                    // const top = dualScreenTop;
                     
                     // Try to open on secondary display
-                    this.customerWindow = window.open(
-                        '/customer-display',
-                        'CustomerDisplay',
-                        `width=${width},height=${height},left=${left},top=${top},scrollbars=no`
-                    );
+                    // this.customerWindow = window.open(
+                    //     '/customer-display',
+                    //     'CustomerDisplay',
+                    //     `width=${width},height=${height},left=${left},top=${top},scrollbars=no`
+                    // );
                     
-                    // Fallback if positioning fails
-                    setTimeout(() => {
-                        if (this.customerWindow) {
-                            // Check if window actually opened on secondary screen
-                            if (this.customerWindow.screenX === window.screenX && 
-                                this.customerWindow.screenY === window.screenY) {
-                                // Failed to open on second screen - go fullscreen
-                                this.customerWindow.resizeTo(
-                                    screen.availWidth,
-                                    screen.availHeight
-                                );
-                                this.customerWindow.moveTo(0, 0);
-                            }
+                    // // Fallback if positioning fails
+                    // setTimeout(() => {
+                    //     if (this.customerWindow) {
+                    //         // Check if window actually opened on secondary screen
+                    //         if (this.customerWindow.screenX === window.screenX && 
+                    //             this.customerWindow.screenY === window.screenY) {
+                    //             // Failed to open on second screen - go fullscreen
+                    //             this.customerWindow.resizeTo(
+                    //                 screen.availWidth,
+                    //                 screen.availHeight
+                    //             );
+                    //             this.customerWindow.moveTo(0, 0);
+                    //         }
                             
-                            // Send initial data
-                            this.updateCustomerScreen();
-                        }
-                    }, 500);
+                    //         // Send initial data
+                    //     //    this.updateCustomerScreen();
+                    //     }
+                    // }, 500);
                 } else {
                     // Window already exists - just focus it
-                    this.customerWindow.focus();
+                 //   this.customerWindow.focus();
                 }
                 
                 // Optional: Add event listener to detect display changes
-                window.addEventListener('resize', this.handleScreenChange);
-            },
+         //       window.addEventListener('resize', this.handleScreenChange);
+            }
+            ,
             handleScreenChange() {
-                if (this.customerWindow && !this.customerWindow.closed) {
-                    // Re-center window if displays change
-                    const left = window.screenX + window.outerWidth;
-                    this.customerWindow.moveTo(left, window.screenY);
-                }
+                // if (this.customerWindow && !this.customerWindow.closed) {
+                //     // Re-center window if displays change
+                //     const left = window.screenX + window.outerWidth;
+                //     this.customerWindow.moveTo(left, window.screenY);
+                // }
             },
     
      updateCustomerScreen() {
-        if (this.customerWindow && !this.customerWindow.closed) {
-            // Send full cart details when items change
-            this.customerWindow.postMessage({
-                type: 'update_cart',
-                details: this.details,
-                total: this.GrandTotal
+        // if (this.customerWindow && !this.customerWindow.closed) {
+        //     // Send full cart details when items change
+        //     this.customerWindow.postMessage({
+        //         type: 'update_cart',
+        //         details: this.details,
+        //         total: this.GrandTotal
              
                 
 
-            }, '*');
+        //     }, '*');
             
-            // Also send just the total when it changes
-            this.customerWindow.postMessage({
-                type: 'update_total',
-                total: this.GrandTotal
-            }, '*');
-        }
+        //     // Also send just the total when it changes
+        //     this.customerWindow.postMessage({
+        //         type: 'update_total',
+        //         total: this.GrandTotal
+        //     }, '*');
+        // }
     },
 
   
@@ -1942,15 +1943,15 @@ CreatePOS() {
               // Automatically update payment.montant with GrandTotal
               this.payment.montant = this.GrandTotal.toFixed(2);
               
-              if (this.customerWindow && !this.customerWindow.closed) {
-                  this.customerWindow.postMessage({
-                      type: 'update_total',
-                      total: this.GrandTotal,
-                      discount: this.sale.discount_type == 'percent' ? this.sale.discount_percent_total : this.sale.discount,
-                      tax: this.sale.TaxNet,
-                      shipping: this.sale.shipping
-                  }, '*');
-              }
+              // if (this.customerWindow && !this.customerWindow.closed) {
+              //     this.customerWindow.postMessage({
+              //         type: 'update_total',
+              //         total: this.GrandTotal,
+              //         discount: this.sale.discount_type == 'percent' ? this.sale.discount_percent_total : this.sale.discount,
+              //         tax: this.sale.TaxNet,
+              //         shipping: this.sale.shipping
+              //     }, '*');
+              // }
               this.calculateBalance()
           },
 
@@ -2206,9 +2207,9 @@ CreatePOS() {
         this.product_filter = [];
 
         // ✅ Automatically open customer window if not already open
-        if (!this.customerWindow || this.customerWindow.closed) {
-            this.customerWindow = window.open('/customer-display', 'CustomerDisplay', 'width=600,height=800');
-        }
+        // if (!this.customerWindow || this.customerWindow.closed) {
+        //     this.customerWindow = window.open('/customer-display', 'CustomerDisplay', 'width=600,height=800');
+        // }
 
         // ✅ Wait until product details are fetched
         await this.Get_Product_Details(id, product.product_variant_id);
