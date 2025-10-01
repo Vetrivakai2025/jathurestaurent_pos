@@ -15,7 +15,7 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>THARMYyy</title>
+  <title>JEYAFOODS</title>
   <link rel=icon href={{ asset('images/logo.svg') }}>
 
   <!-- CSS Files -->

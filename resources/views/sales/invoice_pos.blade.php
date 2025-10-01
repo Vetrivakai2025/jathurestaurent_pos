@@ -14,7 +14,7 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>THARMY CAFE BILL</title>
+  <title>INVOICE BILL</title>
   <link rel=icon href={{ asset('images/logo.svg') }}>
 
   <!-- CSS Files -->
@@ -55,7 +55,7 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
       <!-- Customer Copy (Top Part) -->
       <div class="customer-copy">
         <div class="info">
-          <img src="/images/logo/com_logo.png" alt="Tharmy Cafe Logo" style="max-height: 60px; margin-bottom: 10px;">
+          <img src="/images/logo/jeyalogo.png" alt="" style="max-height: 60px; margin-bottom: 10px;">
           <h2 class="text-center">@{{setting.CompanyName}}</h2>
 
           <p dir="{{ $languageDirection }}"> 
