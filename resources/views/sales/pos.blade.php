@@ -149,6 +149,7 @@
     overflow: hidden;
     min-width: 0;
     box-sizing: border-box;
+    max-width: 240px;
 }
 
 .product-card:hover {

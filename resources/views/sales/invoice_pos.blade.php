@@ -40,7 +40,12 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
     max-height: 60px;
   }
 
-
+p.legal {
+    text-align: center;
+}
+table.detail_invoice {
+    margin-bottom: 15px;
+}
   </style>
 </head>
 
@@ -59,7 +64,7 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
           <h2 class="text-center">@{{setting.CompanyName}}</h2>
 
           <p dir="{{ $languageDirection }}"> 
-            <span>{{ __('translate.date') }} : @{{sale.date}} <br></span>
+      
             <span>{{ __('translate.Sale') }}: @{{sale.Ref}} <br></span>
             <span v-show="pos_settings.show_address">{{ __('translate.Address') }} : @{{setting.CompanyAdress}}
               <br></span>
@@ -132,13 +137,14 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
             </tr>
           </tbody>
         </table>
-
-        <div id="legalcopy" class="ms-2" v-show="pos_settings.show_note">
+ <span>{{ __('translate.date') }} : @{{sale.date}} <br></span>
+        <div id="" class="ms-2" style="align-center" v-show="pos_settings.show_note">
           <p class="legal">
             <strong>{{ __('translate.Thank_You_For_Shopping_With_Us_Please_Come_Again') }}</strong>
           </p>
         </div>
       </div>
+           
 <div class="cut-line">
 ------------------------------
 </div>
