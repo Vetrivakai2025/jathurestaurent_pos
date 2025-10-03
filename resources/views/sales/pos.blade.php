@@ -1511,26 +1511,58 @@ CreatePOS() {
             payment_notes: this.payment.notes,
             montant: parseFloat(this.payment.montant).toFixed(2),
         })
-        .then(response => {
-            if (response.data.success === true) {
-                NProgress.done();
-                this.paymentProcessing = false;
-                toastr.success('{{ __('translate.Created_in_successfully') }}');
+      .then(response => {
+    if (response.data.success === true) {
+        NProgress.done();
+        this.paymentProcessing = false;
+        toastr.success('{{ __('translate.Created_in_successfully') }}');
 
-                // Show thank you modal
-               // $('#thankyouModal').modal('show');
-
-                // Auto print invoice in new tab with autoprint parameter
-                const printUrl = `/pos/${response.data.id}?autoprint=true`;
-                window.open(printUrl, '_blank');
-
-                // Reload page after modal is closed
-              //  $('#thankyouModal').on('hidden.bs.modal', () => {
+        // Open print window only once
+        const printUrl = `/pos/${response.data.id}?autoprint=true`;
+        const printWindow = window.open(printUrl, '_blank', 'width=800,height=600');
+        
+        if (printWindow) {
+            // Listen for print completion
+            printWindow.onbeforeprint = function() {
+                console.log('Printing started...');
+            };
+            
+            printWindow.onafterprint = function() {
+                console.log('Printing completed, closing window...');
+                setTimeout(() => {
+                    if (!printWindow.closed) {
+                        printWindow.close();
+                    }
+                    // Reload main window after print window closes
                     window.location.reload();
-                      localStorage.setItem('customer_display_reload', Date.now());
-              //  });
-            }
-        })
+                    localStorage.setItem('customer_display_reload', Date.now());
+                }, 500);
+            };
+
+            // Fallback: Check if window is closed manually by user
+            const checkWindowClosed = setInterval(() => {
+                if (printWindow.closed) {
+                    clearInterval(checkWindowClosed);
+                    window.location.reload();
+                    localStorage.setItem('customer_display_reload', Date.now());
+                }
+            }, 1000);
+
+            // Safety timeout - close after 30 seconds if still open
+            setTimeout(() => {
+                if (printWindow && !printWindow.closed) {
+                    printWindow.close();
+                    window.location.reload();
+                    localStorage.setItem('customer_display_reload', Date.now());
+                }
+            }, 30000);
+        } else {
+            // If popup blocked, reload anyway
+            window.location.reload();
+            localStorage.setItem('customer_display_reload', Date.now());
+        }
+    }
+})
         .catch(error => {
             NProgress.done();
             this.paymentProcessing = false;
