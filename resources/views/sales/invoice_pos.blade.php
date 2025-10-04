@@ -311,107 +311,73 @@ if(isset($_COOKIE['language']) &&  $_COOKIE['language'] == 'ar') {
 
   <script src="{{asset('/assets/js/jquery.min.js')}}"></script>
 
-  <script>
-    
-    var app = new Vue({
-        el: '#in_pos',
-        data: {
-            payments: @json($payments),
-            details: @json($details),
-            pos_settings: @json($pos_settings),
-            sale: @json($sale),
-            setting: @json($setting),
-        },
-        mounted() {
-            if (this.pos_settings.is_printable || window.location.search.includes('autoprint=true')) {
-                this.auto_print_pos();
-            }
-        },
-        computed: {
-            isPaid() {
-                return parseFloat(this.sale.paid_amount) > 0;
-            },
-            isPaidLessThanTotal() {
-                return parseFloat(this.sale.paid_amount) < parseFloat(this.sale.GrandTotal);
-            }
-        },
-        methods: {
-            formatNumber(number, dec) {
-                const value = (typeof number === "string" ? number : number.toString()).split(".");
-                if (dec <= 0) return value[0];
-                let formated = value[1] || "";
-                if (formated.length > dec)
-                    return `${value[0]}.${formated.substr(0, dec)}`;
-                while (formated.length < dec) formated += "0";
-                return `${value[0]}.${formated}`;
-            },
-            print_pos() {
-        // For thermal printers, use simple window.print()
-        window.print();
+ <script>
+var app = new Vue({
+    el: '#in_pos',
+    data: {
+        payments: @json($payments),
+        details: @json($details),
+        pos_settings: @json($pos_settings),
+        sale: @json($sale),
+        setting: @json($setting),
     },
-
-    auto_print_pos() {
-        // Direct print for thermal printer
-        setTimeout(() => {
-            window.print();
-            
-            // Close window if it's a popup
-            if (window.opener) {
-                setTimeout(() => {
-                    window.close();
-                }, 1000);
-            }
-        }, 500);
+    mounted() {
+        // REMOVED auto-print from here - let the standalone script handle it
     },
+    computed: {
+        isPaid() {
+            return parseFloat(this.sale.paid_amount) > 0;
+        },
+        isPaidLessThanTotal() {
+            return parseFloat(this.sale.paid_amount) < parseFloat(this.sale.GrandTotal);
         }
-    });
-  </script>
-<script>
-// Auto print only if autoprint parameter is present
-if (window.location.search.includes('autoprint=true')) {
-    // Set a flag to track if we've already printed
-    if (!sessionStorage.getItem('hasAutoPrinted')) {
-        sessionStorage.setItem('hasAutoPrinted', 'true');
-        
-        // Wait for content to load, then print
-        setTimeout(() => {
+    },
+    methods: {
+        formatNumber(number, dec) {
+            const value = (typeof number === "string" ? number : number.toString()).split(".");
+            if (dec <= 0) return value[0];
+            let formated = value[1] || "";
+            if (formated.length > dec)
+                return `${value[0]}.${formated.substr(0, dec)}`;
+            while (formated.length < dec) formated += "0";
+            return `${value[0]}.${formated}`;
+        },
+        print_pos() {
+            // Manual print when user clicks the print button
             window.print();
-            
-            // Clear the flag after a delay
-            setTimeout(() => {
-                sessionStorage.removeItem('hasAutoPrinted');
-            }, 1000);
-        }, 1000);
-    }
-}
-
-// Listen for print events
-window.addEventListener('afterprint', function(event) {
-    console.log('Print dialog closed');
-    
-    // If this is a popup window, close it after printing
-    if (window.opener && !window.opener.closed) {
-        setTimeout(() => {
-            window.close();
-        }, 500);
+        }
     }
 });
 
-// Alternative approach for browsers that support beforeprint/afterprint
-window.onbeforeprint = function() {
-    console.log('Print dialog opened');
-};
-
-window.onafterprint = function() {
-    console.log('Print dialog closed');
+// ONLY ONE print controller - this handles auto-printing
+if (window.location.search.includes('autoprint=true')) {
+    let hasPrinted = false;
     
-    // Close window if it was opened for printing
-    if (window.opener && !window.opener.closed) {
-        setTimeout(() => {
-            window.close();
-        }, 500);
-    }
-};
+    const autoPrint = function() {
+        if (!hasPrinted) {
+            hasPrinted = true;
+            console.log('Auto-printing invoice...');
+            
+            // Wait for Vue to render everything (2 seconds)
+            setTimeout(function() {
+                window.print();
+            }, 2000);
+        }
+    };
+    
+    // Start the auto-print process
+    autoPrint();
+    
+    // Close window after printing
+    window.onafterprint = function() {
+        console.log('Print completed, closing window...');
+        setTimeout(function() {
+            if (window.opener && !window.opener.closed) {
+                window.close();
+            }
+        }, 1000);
+    };
+}
 </script>
 </body>
 </html>
