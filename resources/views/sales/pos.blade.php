@@ -2022,27 +2022,22 @@ CreatePOS() {
 
           
           //-------Verified QTY
-          Verified_Qty(detail, id) {
-            for (var i = 0; i < this.details.length; i++) {
-              if (this.details[i].detail_id === id) {
-                  if (isNaN(detail.quantity)) {
-                    this.details[i].quantity = detail.current;
-                  }
-                  else if (detail.quantity > detail.current) {
-                    toastr.error('{{ __('translate.Low_Stock') }}');
-                    this.details[i].quantity = detail.current;
-                    
-                  } else if(detail.quantity < detail.qty_min){
-                  
-                      toastr.warning('Minimum Sales Quantity Is' + ' '+ detail.qty_min +' ' + detail.unitSale);
-                  } else {
-                    this.details[i].quantity = detail.quantity;
-                  }
-              }
+       // In your Vue.js methods, remove stock checks
+Verified_Qty(detail, id) {
+    for (var i = 0; i < this.details.length; i++) {
+        if (this.details[i].detail_id === id) {
+            if (isNaN(detail.quantity)) {
+                this.details[i].quantity = 1; // Default to 1 instead of current stock
+            } else if(detail.quantity < detail.qty_min){
+                toastr.warning('Minimum order quantity is' + ' '+ detail.qty_min);
+            } else {
+                this.details[i].quantity = detail.quantity;
             }
-            this.$forceUpdate();
-            this.CaclulTotal();
-          },
+        }
+    }
+    this.$forceUpdate();
+    this.CaclulTotal();
+},
           //----------------------------------- Increment QTY with barcode scanner ------------------------------\\
           increment_qty_scanner(code) {
             for (var i = 0; i < this.details.length; i++) {
@@ -2063,19 +2058,16 @@ CreatePOS() {
             }, 300);
           },
           //----------------------------------- Increment QTY ------------------------------\\
-          increment(detail, id) {
-            for (var i = 0; i < this.details.length; i++) {
-              if (this.details[i].detail_id == id) {
-                if (detail.quantity + 1 > detail.current) {
-                  toastr.error('{{ __('translate.Low_Stock') }}');
-                } else {
-                  this.details[i].quantity++;
-                }
-              }
-            }
-            this.CaclulTotal();
-            this.$forceUpdate();
-          },
+       // Also remove stock checks in increment/decrement methods
+increment(detail, id) {
+    for (var i = 0; i < this.details.length; i++) {
+        if (this.details[i].detail_id == id) {
+            this.details[i].quantity++; // No stock check
+        }
+    }
+    this.CaclulTotal();
+    this.$forceUpdate();
+},
 
 
 

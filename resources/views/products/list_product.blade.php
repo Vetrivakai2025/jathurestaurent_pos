@@ -144,6 +144,7 @@
 
         //Get Data
         function product_datatable(name ='', category_id ='',brand_id ='', code =''){
+        
             var table = $('#product_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -265,6 +266,9 @@
                     }]
                    
             });
+    //         table.on('xhr.dt', function(e, settings, json, xhr) {
+    //     console.log("Product Data:", json.data); // logs the product list array
+    // });
         }
 
         // Clear Filter

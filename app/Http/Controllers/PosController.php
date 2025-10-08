@@ -170,16 +170,12 @@ class PosController extends Controller
             ->with('product', 'product.unitSale')
             ->where('deleted_at', '=', null)
             ->where(function ($query) use ($request) {
-                if ($request->stock == '1' && $request->product_service == '1') {
-                    return $query->where('qte', '>', 0)->orWhere('manage_stock', false);
-
-                }elseif($request->stock == '1' && $request->product_service == '0') {
-                    return $query->where('qte', '>', 0)->orWhere('manage_stock', true);
-
-                }else{
-                    return $query->where('manage_stock', true);
-                }
-            })
+            return $query->when($request->filled('category_id'), function ($query) use ($request) {
+                return $query->whereHas('product', function ($q) use ($request) {
+                    $q->where('category_id', '=', $request->category_id);
+                });
+            });
+        })
 
         // Filter
         ->where(function ($query) use ($request) {
@@ -253,20 +249,20 @@ class PosController extends Controller
             }
 
             if ($product_warehouse['product']['unitSale'] && $product_warehouse['product']['unitSale']->operator == '/') {
-                $item['qte_sale'] = $product_warehouse->qte * $product_warehouse['product']['unitSale']->operator_value;
+               $item['qte_sale'] = 'Available';
                 $price = $price_init / $product_warehouse['product']['unitSale']->operator_value;
 
             }elseif ($product_warehouse['product']['unitSale'] && $product_warehouse['product']['unitSale']->operator == '*') {
-                $item['qte_sale'] = $product_warehouse->qte / $product_warehouse['product']['unitSale']->operator_value;
+               $item['qte_sale'] = 'Available';
                 $price = $price_init * $product_warehouse['product']['unitSale']->operator_value;
            
             }else{
-                $item['qte_sale'] = $product_warehouse->qte;
+               $item['qte_sale'] = 'Available';
                 $price = $price_init;
             }
 
             $item['unitSale'] = $product_warehouse['product']['unitSale']?$product_warehouse['product']['unitSale']->ShortName:'';
-            $item['qte'] = $product_warehouse->qte;
+          $item['qte'] = 'Available';
 
             if ($product_warehouse['product']->TaxNet !== 0.0) {
 
@@ -392,16 +388,16 @@ class PosController extends Controller
             $item['product_type'] = $product_warehouse['product']->type;
 
             if ($product_warehouse['product']['unitSale'] && $product_warehouse['product']['unitSale']->operator == '/') {
-                $item['qte_sale'] = $product_warehouse->qte * $product_warehouse['product']['unitSale']->operator_value;
+                $item['qte_sale'] = 'Available';
            
             } elseif ($product_warehouse['product']['unitSale'] && $product_warehouse['product']['unitSale']->operator == '*') {
-                $item['qte_sale'] = $product_warehouse->qte / $product_warehouse['product']['unitSale']->operator_value;
+                $item['qte_sale'] = 'Available';
             
             }else{
-                $item['qte_sale'] = $product_warehouse->qte;
+               $item['qte_sale'] = 'Available';
             }
 
-            $item['qte'] = $product_warehouse->qte;
+           $item['qte'] = 'Available';
             $item['unitSale'] = $product_warehouse['product']['unitSale']?$product_warehouse['product']['unitSale']->ShortName:'';
 
             $data[] = $item;

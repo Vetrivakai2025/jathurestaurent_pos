@@ -478,39 +478,35 @@ class ProductsController extends Controller
                     $Product->note         = $request['note'];
 
                      //-- check if type is_single
-                    if($request['type'] == 'is_single'){
-                        $Product->price = $request['price'];
-                        $Product->cost  = $request['cost'];
-                        $Product->takeaway  = $request['takeaway'];
+                    // In store method - around line 250
+                if ($request['type'] == 'is_single') {
+                    $Product->price = $request['price'];
+                    $Product->cost  = $request['cost'];
+                    $Product->takeaway  = $request['takeaway'];
 
-                        $Product->unit_id = $request['unit_id'];
-                        $Product->unit_sale_id = $request['unit_sale_id'] ? $request['unit_sale_id'] : $request['unit_id'];
-                        $Product->unit_purchase_id = $request['unit_purchase_id'] ? $request['unit_purchase_id'] : $request['unit_id'];
+                    $Product->unit_id = $request['unit_id'];
+                    $Product->unit_sale_id = $request['unit_sale_id'] ? $request['unit_sale_id'] : $request['unit_id'];
+                    $Product->unit_purchase_id = $request['unit_purchase_id'] ? $request['unit_purchase_id'] : $request['unit_id'];
 
+                    // Set high values for restaurant items (unlimited stock)
+                    $Product->stock_alert = 999999;
+                    $Product->qty_min = 1;
+                    $manage_stock = 0; // Disable stock management for restaurant items
 
-                        $Product->stock_alert = $request['stock_alert'] ? $request['stock_alert'] : 0;
-                        $Product->qty_min = $request['qty_min'] ? $request['qty_min'] : 0;
+                } elseif($request['type'] == 'is_variant') {
+                    $Product->price = 0;
+                    $Product->cost  = 0;
+                    $Product->takeaway  = 0;
 
-                        $manage_stock = 1;
+                    $Product->unit_id = $request['unit_id'];
+                    $Product->unit_sale_id = $request['unit_sale_id'] ? $request['unit_sale_id'] : $request['unit_id'];
+                    $Product->unit_purchase_id = $request['unit_purchase_id'] ? $request['unit_purchase_id'] : $request['unit_id'];
 
-                    //-- check if type is_variant
-                    }elseif($request['type'] == 'is_variant'){
-
-                        $Product->price = 0;
-                        $Product->cost  = 0;
-                        $Product->takeaway  = 0;
-
-                        $Product->unit_id = $request['unit_id'];
-                        $Product->unit_sale_id = $request['unit_sale_id'] ? $request['unit_sale_id'] : $request['unit_id'];
-                        $Product->unit_purchase_id = $request['unit_purchase_id'] ? $request['unit_purchase_id'] : $request['unit_id'];
-
-                        $Product->stock_alert = $request['stock_alert'] ? $request['stock_alert'] : 0;
-                        $Product->qty_min = $request['qty_min'] ? $request['qty_min'] : 0;
-
-                        $manage_stock = 1;
-
-                    //-- check if type is_service
-                    }else{
+                    // Set high values for restaurant items (unlimited stock)
+                    $Product->stock_alert = 999999;
+                    $Product->qty_min = 1;
+                    $manage_stock = 0; // Disable stock management for restaurant items
+                }else{
                         $Product->price = $request['price'];
                         $Product->cost  = 0;
                         $Product->takeaway  = 0;
@@ -568,32 +564,35 @@ class ProductsController extends Controller
                     }
 
                     //--Store Product Warehouse
-                    $warehouses = Warehouse::where('deleted_at', null)->pluck('id')->toArray();
-                    if ($warehouses) {
-                        $Product_variants = ProductVariant::where('product_id', $Product->id)
-                            ->where('deleted_at', null)
-                            ->get();
-                        foreach ($warehouses as $warehouse) {
-                            if ($request['is_variant'] == 'true') {
-                                foreach ($Product_variants as $product_variant) {
-
+                    // In store method - around line 350
+                        //--Store Product Warehouse
+                        $warehouses = Warehouse::where('deleted_at', null)->pluck('id')->toArray();
+                        if ($warehouses) {
+                            $Product_variants = ProductVariant::where('product_id', $Product->id)
+                                ->where('deleted_at', null)
+                                ->get();
+                            foreach ($warehouses as $warehouse) {
+                                if ($request['is_variant'] == 'true') {
+                                    foreach ($Product_variants as $product_variant) {
+                                        $product_warehouse[] = [
+                                            'product_id' => $Product->id,
+                                            'warehouse_id' => $warehouse,
+                                            'product_variant_id' => $product_variant->id,
+                                            'manage_stock' => $manage_stock, // This should be 0 now
+                                            'qte' => 999999, // Set high quantity
+                                        ];
+                                    }
+                                } else {
                                     $product_warehouse[] = [
                                         'product_id' => $Product->id,
                                         'warehouse_id' => $warehouse,
-                                        'product_variant_id' => $product_variant->id,
-                                        'manage_stock' => $manage_stock,
+                                        'manage_stock' => $manage_stock, // This should be 0 now
+                                        'qte' => 999999, // Set high quantity
                                     ];
                                 }
-                            } else {
-                                $product_warehouse[] = [
-                                    'product_id' => $Product->id,
-                                    'warehouse_id' => $warehouse,
-                                    'manage_stock' => $manage_stock,
-                                ];
                             }
+                            product_warehouse::insert($product_warehouse);
                         }
-                        product_warehouse::insert($product_warehouse);
-                    }
 
                 }, 10);
 
